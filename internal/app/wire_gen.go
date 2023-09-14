@@ -8,9 +8,9 @@ package app
 
 import (
 	"github.com/bnb-chain/airdrop-service/internal/config"
+	"github.com/bnb-chain/airdrop-service/internal/injection"
 	"github.com/bnb-chain/airdrop-service/internal/module/approval"
 	"github.com/bnb-chain/airdrop-service/internal/module/http"
-	"github.com/bnb-chain/airdrop-service/internal/wireset"
 )
 
 // Injectors from wire.go:
@@ -20,15 +20,15 @@ func Initialize(configPath string) (Application, error) {
 	if err != nil {
 		return Application{}, err
 	}
-	logger, err := wireset.InitLogger(configConfig)
+	logger, err := injection.InitLogger(configConfig)
 	if err != nil {
 		return Application{}, err
 	}
-	keyManager, err := wireset.InitKeyManager(configConfig)
+	keyManager, err := injection.InitKeyManager(configConfig)
 	if err != nil {
 		return Application{}, err
 	}
-	store, err := wireset.InitStore(configConfig, logger)
+	store, err := injection.InitStore(configConfig, logger)
 	if err != nil {
 		return Application{}, err
 	}

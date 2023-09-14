@@ -1,4 +1,4 @@
-package wireset
+package injection
 
 import (
 	"github.com/bnb-chain/airdrop-service/internal/config"

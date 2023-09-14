@@ -1,4 +1,4 @@
-package wireset
+package injection
 
 import (
 	"errors"
