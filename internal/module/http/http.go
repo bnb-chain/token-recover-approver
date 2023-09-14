@@ -6,7 +6,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/rs/zerolog"
 
-	"github.com/bnb-chain/airdrop-service/internal/delivery/approval"
+	"github.com/bnb-chain/airdrop-service/internal/module/approval"
 )
 
 type HttpServer struct {

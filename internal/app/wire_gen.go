@@ -4,12 +4,12 @@
 //go:build !wireinject
 // +build !wireinject
 
-package http
+package app
 
 import (
 	"github.com/bnb-chain/airdrop-service/internal/config"
-	"github.com/bnb-chain/airdrop-service/internal/delivery/approval"
-	"github.com/bnb-chain/airdrop-service/internal/delivery/http"
+	"github.com/bnb-chain/airdrop-service/internal/module/approval"
+	"github.com/bnb-chain/airdrop-service/internal/module/http"
 	"github.com/bnb-chain/airdrop-service/internal/wireset"
 )
 
@@ -28,7 +28,11 @@ func Initialize(configPath string) (Application, error) {
 	if err != nil {
 		return Application{}, err
 	}
-	approvalService := approval.NewApprovalService(keyManager)
+	store, err := wireset.InitStore(configConfig, logger)
+	if err != nil {
+		return Application{}, err
+	}
+	approvalService := approval.NewApprovalService(keyManager, store)
 	httpServer := http.NewHttpServer(approvalService, logger)
 	application := newApplication(logger, configConfig, httpServer)
 	return application, nil

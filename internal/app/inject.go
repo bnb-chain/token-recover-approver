@@ -1,10 +1,10 @@
-package http
+package app
 
 import (
 	"fmt"
 
 	"github.com/bnb-chain/airdrop-service/internal/config"
-	"github.com/bnb-chain/airdrop-service/internal/delivery/http"
+	"github.com/bnb-chain/airdrop-service/internal/module/http"
 	"github.com/bnb-chain/airdrop-service/internal/version"
 
 	"github.com/rs/zerolog"

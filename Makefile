@@ -15,10 +15,10 @@ generate:
 	@go generate main.go
 
 run:
-	@go run -ldflags="$(ldflags)" main.go
+	@go run -ldflags="$(ldflags)" main.go --config configs/default.config.yaml
 
 build: generate
-	go build -ldflags="$(ldflags)" -o ./build/bin/airdop main.go
+	go build -ldflags="$(ldflags)" -o ./build/bin/airdrop main.go
 
 build-image:
 	@read -p "Enter Image Name: " IMAGE_NAME; \

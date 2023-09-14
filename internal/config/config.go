@@ -10,9 +10,15 @@ import (
 )
 
 type Config struct {
-	Logger LoggerConfig `mapstructure:"logger"`
-	HTTP   HTTPConfig   `mapstructure:"http"`
-	Secret SecretConfig `mapstructure:"secret"`
+	ChainID string       `mapstructure:"chain_id"`
+	Logger  LoggerConfig `mapstructure:"logger"`
+	HTTP    HTTPConfig   `mapstructure:"http"`
+	Secret  SecretConfig `mapstructure:"secret"`
+	Store   StoreConfig  `mapstructure:"store"`
+}
+
+func defaultConfig(v *viper.Viper) {
+	v.SetDefault("chain_id", "Binance-Chain-Ganges")
 }
 
 type LoggerConfig struct {
@@ -57,18 +63,43 @@ func defaultSecretConfig(v *viper.Viper) {
 	v.SetDefault("secret.aws_secret_manager.secret_name", "")
 }
 
+type StoreConfig struct {
+	Driver      string            `mapstructure:"driver"`
+	MemoryStore MemoryStoreConfig `mapstructure:"memory_store"`
+}
+
+type MemoryStoreConfig struct {
+	StateRoot    string `mapstructure:"state_root"`
+	Assets       string `mapstructure:"assets"`
+	Accounts     string `mapstructure:"accounts"`
+	MerkleProofs string `mapstructure:"merkle_proofs"`
+}
+
+func defaultStoreConfig(v *viper.Viper) {
+	v.SetDefault("store.driver", "memory")
+	v.SetDefault("store.memory_store.state_root", "./example/state_root.json")
+	v.SetDefault("store.memory_store.assets", "./example/assets.json")
+	v.SetDefault("store.memory_store.accounts", "./example/accounts.json")
+	v.SetDefault("store.memory_store.merkle_proofs", "./example/merkle_proofs.json")
+}
+
 func NewConfig(configPath string) (*Config, error) {
 	var file *os.File
-	file, _ = os.Open(configPath)
+	file, err := os.Open(configPath)
+	if len(configPath) > 0 && err != nil {
+		return nil, err
+	}
 
 	v := viper.New()
 	v.SetConfigType("yaml")
 	v.AutomaticEnv()
 
 	/* default */
+	defaultConfig(v)
 	defaultLoggerConfig(v)
 	defaultHTTPConfig(v)
 	defaultSecretConfig(v)
+	defaultStoreConfig(v)
 
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	v.ReadConfig(file)

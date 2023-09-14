@@ -1,3 +1,5 @@
+chain_id: Binance-Chain-Ganges
+
 logger:
   level: INFO
   format: console # json, console
@@ -9,4 +11,12 @@ http:
 secret:
   type: local
   local_secret:
-    private_key: ""
+    private_key: "afc2986f283cf5f9d17e04c6a12ccf8fa46149fc37d48e11abef15a46ae34eb7"
+
+store:
+  driver: memory
+  memory_store:
+    state_root: ./example/store/state_root.json
+    assets: ./example/store/assets.json
+    accounts: ./example/store/accounts.json
+    merkle_proofs: ./example/store/merkle_proofs.json
