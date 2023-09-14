@@ -34,6 +34,34 @@ func (acc *Account) Serialize() ([]byte, error) {
 	).Bytes(), nil
 }
 
+func (acc *Account) GetPrefixSuffixNode(symbol string) ([]byte, []byte) {
+	prefixBytes := bytes.NewBuffer(nil)
+	suffixBytes := bytes.NewBuffer(nil)
+
+	prefixBytes.Write(acc.Address.Bytes())
+	prefixBytes.Write(big.NewInt(acc.AccountNumber).Bytes())
+
+	isSplit := false
+	for _, coin := range acc.SummaryCoins {
+		if coin.Denom == symbol {
+			isSplit = true
+			continue
+		}
+		var b [32]byte
+		copy(b[:], coin.Denom)
+
+		if !isSplit {
+			prefixBytes.Write(b[:])
+			prefixBytes.Write(big.NewInt(coin.Amount).Bytes())
+		} else {
+			suffixBytes.Write(b[:])
+			suffixBytes.Write(big.NewInt(coin.Amount).Bytes())
+		}
+	}
+
+	return prefixBytes.Bytes(), suffixBytes.Bytes()
+}
+
 // Assets is a map of asset name to amount
 type Assets map[string]*Asset
 

@@ -34,6 +34,6 @@ func (*KVStore) GetAssetBySymbol(symbol string) (asset *store.Asset, err error) 
 }
 
 // GetStateRoot implements store.Store.
-func (*KVStore) GetStateRoot() (stateRoot []byte, err error) {
+func (*KVStore) GetStateRoot() (stateRoot string, err error) {
 	panic("unimplemented")
 }

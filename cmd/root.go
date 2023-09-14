@@ -13,8 +13,6 @@ import (
 
 // Root command
 var (
-	timeout uint
-	cfgFile string
 	rootCmd = &cobra.Command{
 		Run: func(_ *cobra.Command, _ []string) {
 			app, err := app.Initialize(cfgFile)
@@ -33,6 +31,12 @@ func Execute() {
 		os.Exit(1)
 	}
 }
+
+// Flags
+var (
+	timeout uint
+	cfgFile string
+)
 
 func init() {
 	rootCmd.AddCommand(versionCmd)

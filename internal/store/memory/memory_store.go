@@ -110,21 +110,45 @@ type MemoryStore struct {
 }
 
 // GetAccountByAddress implements store.Store.
-func (*MemoryStore) GetAccountByAddress(address types.AccAddress) (account *store.Account, err error) {
-	panic("unimplemented")
+func (ss *MemoryStore) GetAccountByAddress(address types.AccAddress) (*store.Account, error) {
+	acc, exist := ss.accounts[address.String()]
+	if !exist {
+		return nil, ErrAccountNotFound
+	}
+
+	return &store.Account{
+		Address:       acc.Address,
+		AccountNumber: acc.AccountNumber,
+		SummaryCoins:  acc.SummaryCoins,
+		Coins:         acc.Coins,
+		FrozenCoins:   acc.FrozenCoins,
+		LockedCoins:   acc.LockedCoins,
+	}, nil
 }
 
 // GetAccountProofs implements store.Store.
-func (*MemoryStore) GetAccountProofs(address types.AccAddress) (proofs []string, err error) {
-	panic("unimplemented")
+func (ss *MemoryStore) GetAccountProofs(address types.AccAddress) ([]string, error) {
+	proofs, exist := ss.proofs[address.String()]
+	if !exist {
+		return nil, ErrProofNotFound
+	}
+	return proofs.Proof, nil
 }
 
 // GetAssetBySymbol implements store.Store.
-func (*MemoryStore) GetAssetBySymbol(symbol string) (asset *store.Asset, err error) {
-	panic("unimplemented")
+func (ss *MemoryStore) GetAssetBySymbol(symbol string) (*store.Asset, error) {
+	asset, exist := ss.assets[symbol]
+	if !exist {
+		return nil, ErrAssetNotFound
+	}
+
+	return &store.Asset{
+		Owner:  asset.Owner,
+		Amount: asset.Amount,
+	}, nil
 }
 
 // GetStateRoot implements store.Store.
-func (*MemoryStore) GetStateRoot() (stateRoot []byte, err error) {
-	panic("unimplemented")
+func (ss *MemoryStore) GetStateRoot() (stateRoot string, err error) {
+	return ss.stateRoot.StateRoot, nil
 }

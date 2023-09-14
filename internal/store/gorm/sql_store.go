@@ -34,6 +34,6 @@ func (*SQLStore) GetAssetBySymbol(symbol string) (asset *store.Asset, err error)
 }
 
 // GetStateRoot implements store.Store.
-func (*SQLStore) GetStateRoot() (stateRoot []byte, err error) {
+func (*SQLStore) GetStateRoot() (stateRoot string, err error) {
 	panic("unimplemented")
 }

@@ -1,31 +1,21 @@
 package http
 
-import (
-	"github.com/ethereum/go-ethereum/common"
+import "encoding/json"
+
+type ResponseCode int
+
+const (
+	Success ResponseCode = iota
+	InvalidRequest
 )
 
-type GetClaimApprovalRequest struct {
-	TokenSymbol    string
-	OwnerSignature []byte
-	ClaimAddress   common.Address
+type Response struct {
+	Code  ResponseCode `json:"code"`
+	Data  interface{}  `json:"data,omitempty"`
+	Error string       `json:"error,omitempty"`
 }
 
-type GetClaimApprovalResponse struct {
-	Amount     int64
-	Node       []byte
-	PrefixNode []byte
-	SuffixNode []byte
-	Proofs     [][]byte
-	Approval   []byte
-}
-
-type GetRegisterTokenApprovalRequest struct {
-	TokenSymbol     string
-	OwnerSignature  []byte
-	RegisterAddress common.Address
-}
-
-type GetRegisterTokenApprovalResponse struct {
-	Amount   int64
-	Approval []byte
+func (r *Response) Marshal() string {
+	b, _ := json.Marshal(r)
+	return string(b)
 }
