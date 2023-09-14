@@ -6,18 +6,21 @@
 package http
 
 import (
+	"github.com/google/wire"
+
 	"github.com/bnb-chain/airdrop-service/internal/config"
+	"github.com/bnb-chain/airdrop-service/internal/delivery/approval"
 	"github.com/bnb-chain/airdrop-service/internal/delivery/http"
 	"github.com/bnb-chain/airdrop-service/internal/wireset"
-
-	"github.com/google/wire"
 )
 
 func Initialize(configPath string) (Application, error) {
 	wire.Build(
 		newApplication,
 		config.NewConfig,
+		approval.NewApprovalService,
 		wireset.InitLogger,
+		wireset.InitKeyManager,
 		http.NewHttpServer,
 	)
 	return Application{}, nil

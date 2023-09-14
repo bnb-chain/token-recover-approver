@@ -1,4 +1,4 @@
-package http
+package approval
 
 import (
 	"github.com/ethereum/go-ethereum/common"
@@ -11,12 +11,11 @@ type GetClaimApprovalRequest struct {
 }
 
 type GetClaimApprovalResponse struct {
-	Amount     int64
-	Node       []byte
-	PrefixNode []byte
-	SuffixNode []byte
-	Proofs     [][]byte
-	Approval   []byte
+	Amount            int64
+	PrefixNode        []byte
+	SuffixNode        []byte
+	Proofs            [][]byte
+	ApprovalSignature []byte
 }
 
 type GetRegisterTokenApprovalRequest struct {

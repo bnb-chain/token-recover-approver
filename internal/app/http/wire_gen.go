@@ -8,6 +8,7 @@ package http
 
 import (
 	"github.com/bnb-chain/airdrop-service/internal/config"
+	"github.com/bnb-chain/airdrop-service/internal/delivery/approval"
 	"github.com/bnb-chain/airdrop-service/internal/delivery/http"
 	"github.com/bnb-chain/airdrop-service/internal/wireset"
 )
@@ -23,7 +24,12 @@ func Initialize(configPath string) (Application, error) {
 	if err != nil {
 		return Application{}, err
 	}
-	httpServer := http.NewHttpServer(logger)
+	keyManager, err := wireset.InitKeyManager(configConfig)
+	if err != nil {
+		return Application{}, err
+	}
+	approvalService := approval.NewApprovalService(keyManager)
+	httpServer := http.NewHttpServer(approvalService, logger)
 	application := newApplication(logger, configConfig, httpServer)
 	return application, nil
 }

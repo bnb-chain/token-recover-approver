@@ -9,7 +9,7 @@ ldflags = -X $(REPO)/internal/version.AppVersion=$(VERSION) \
           -X $(REPO)/internal/version.GitCommitDate=$(GIT_COMMIT_DATE)
 
 tools:
-	@go install github.com/google/wire/cmd/wire@latest
+	@go install github.com/google/wire/cmd/wire@v0.5.0
 
 generate: 
 	@go generate main.go

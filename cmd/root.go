@@ -5,9 +5,10 @@ import (
 	"os"
 	"time"
 
+	"github.com/spf13/cobra"
+
 	"github.com/bnb-chain/airdrop-service/internal/app/http"
 	"github.com/bnb-chain/airdrop-service/pkg/util"
-	"github.com/spf13/cobra"
 )
 
 // Root command

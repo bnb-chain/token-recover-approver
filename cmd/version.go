@@ -3,8 +3,9 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/bnb-chain/airdrop-service/internal/version"
 	"github.com/spf13/cobra"
+
+	"github.com/bnb-chain/airdrop-service/internal/version"
 )
 
 var (
