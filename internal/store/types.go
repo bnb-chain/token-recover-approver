@@ -21,11 +21,8 @@ type Account struct {
 // Serialize implements merkle tree data Serialize method.
 func (acc *Account) Serialize() ([]byte, error) {
 	coinBytes := bytes.NewBuffer(nil)
-	for _, coin := range acc.SummaryCoins {
-		var b [32]byte
-		copy(b[:], coin.Denom)
-		coinBytes.Write(b[:])
-		coinBytes.Write(big.NewInt(coin.Amount).Bytes())
+	for index, coin := range acc.SummaryCoins {
+		coinBytes.Write(tokenHash(int64(index), coin.Denom, coin.Amount))
 	}
 	return crypto.Keccak256Hash(
 		acc.Address.Bytes(),
@@ -42,24 +39,30 @@ func (acc *Account) GetPrefixSuffixNode(symbol string) ([]byte, []byte) {
 	prefixBytes.Write(big.NewInt(acc.AccountNumber).Bytes())
 
 	isSplit := false
-	for _, coin := range acc.SummaryCoins {
+	for index, coin := range acc.SummaryCoins {
 		if coin.Denom == symbol {
 			isSplit = true
 			continue
 		}
-		var b [32]byte
-		copy(b[:], coin.Denom)
 
 		if !isSplit {
-			prefixBytes.Write(b[:])
-			prefixBytes.Write(big.NewInt(coin.Amount).Bytes())
+			prefixBytes.Write(tokenHash(int64(index), coin.Denom, coin.Amount))
 		} else {
-			suffixBytes.Write(b[:])
-			suffixBytes.Write(big.NewInt(coin.Amount).Bytes())
+			suffixBytes.Write(tokenHash(int64(index), coin.Denom, coin.Amount))
 		}
 	}
 
 	return prefixBytes.Bytes(), suffixBytes.Bytes()
+}
+
+func tokenHash(index int64, denom string, amount int64) []byte {
+	var symbol [32]byte
+	copy(symbol[:], denom)
+
+	return crypto.Keccak256Hash(
+		big.NewInt(index).Bytes(),
+		symbol[:],
+		big.NewInt(amount).Bytes()).Bytes()
 }
 
 // Assets is a map of asset name to amount
