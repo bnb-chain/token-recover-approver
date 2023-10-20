@@ -26,27 +26,27 @@ const (
 )
 
 type ApprovalService struct {
-	config *config.Config
-	km     keymanager.KeyManager
-	store  store.Store
+	config           *config.Config
+	km               keymanager.KeyManager
+	store            store.Store
+	accountWhileList map[string]struct{}
 }
 
 func NewApprovalService(config *config.Config, km keymanager.KeyManager, store store.Store) *ApprovalService {
-	return &ApprovalService{km: km, store: store}
+	accountWhileList := make(map[string]struct{})
+	for _, addr := range config.AccountWhileList {
+		accountWhileList[addr] = struct{}{}
+	}
+	return &ApprovalService{km: km, store: store, config: config, accountWhileList: accountWhileList}
 }
 
 func (svc *ApprovalService) checkWhileList(acc types.AccAddress) bool {
-	if len(svc.config.AccountWhileList) == 0 {
+	if len(svc.accountWhileList) == 0 {
 		return true
 	}
 
-	for _, addr := range svc.config.AccountWhileList {
-		if addr == acc.String() {
-			return true
-		}
-	}
-
-	return false
+	_, ok := svc.accountWhileList[acc.String()]
+	return ok
 }
 
 func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp *GetClaimApprovalResponse, err error) {
