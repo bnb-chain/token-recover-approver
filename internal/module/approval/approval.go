@@ -35,8 +35,21 @@ func NewApprovalService(config *config.Config, km keymanager.KeyManager, store s
 	return &ApprovalService{km: km, store: store}
 }
 
+func (svc *ApprovalService) checkWhileList(acc types.AccAddress) bool {
+	if len(svc.config.AccountWhileList) == 0 {
+		return true
+	}
+
+	for _, addr := range svc.config.AccountWhileList {
+		if addr == acc.String() {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp *GetClaimApprovalResponse, err error) {
-	// Verify owner signature
 	ownerPubKeyBytes, err := hex.DecodeString(req.OwnerPubKey)
 	if err != nil {
 		return nil, err
@@ -50,9 +63,11 @@ func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp
 		return nil, err
 	}
 
-	if err != nil {
-		return nil, err
+	// Check While List
+	if !svc.checkWhileList(ownerAddr) {
+		return nil, errors.New("address is not in while list")
 	}
+
 	// Get Merkle Proofs and Node
 	proofs, err := svc.store.GetAccountProofs(ownerAddr)
 	if err != nil {
