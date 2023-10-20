@@ -4,6 +4,8 @@ go 1.20
 
 require (
 	github.com/aws/aws-sdk-go v1.45.9
+	github.com/bnb-chain/node v0.10.16
+	github.com/btcsuite/btcd/btcec/v2 v2.3.2
 	github.com/cosmos/cosmos-sdk v0.25.0
 	github.com/ethereum/go-ethereum v1.12.2
 	github.com/google/wire v0.5.0
@@ -12,12 +14,12 @@ require (
 	github.com/rs/zerolog v1.20.0
 	github.com/spf13/cobra v1.5.0
 	github.com/spf13/viper v1.8.1
+	golang.org/x/crypto v0.10.0
 )
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bnb-chain/ics23 v0.1.0 // indirect
-	github.com/btcsuite/btcd/btcec/v2 v2.3.2 // indirect
 	github.com/btcsuite/btcd/btcutil v1.1.3 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
@@ -55,10 +57,9 @@ require (
 	github.com/tendermint/go-amino v0.15.0 // indirect
 	github.com/tendermint/iavl v0.12.4 // indirect
 	github.com/tendermint/tendermint v0.35.9 // indirect
-	golang.org/x/crypto v0.9.0 // indirect
-	golang.org/x/net v0.10.0 // indirect
+	golang.org/x/net v0.11.0 // indirect
 	golang.org/x/sys v0.9.0 // indirect
-	golang.org/x/text v0.9.0 // indirect
+	golang.org/x/text v0.10.0 // indirect
 	google.golang.org/genproto v0.0.0-20210624195500-8bfb893ecb84 // indirect
 	google.golang.org/grpc v1.40.0 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
@@ -68,6 +69,8 @@ require (
 
 replace (
 	github.com/Shopify/sarama v1.26.1 => github.com/Shopify/sarama v1.21.0
+	// TODO: bump to official version
+	github.com/bnb-chain/node => github.com/j75689/node v0.10.1-0.20230929155358-732f6df2f9d4
 	github.com/cosmos/cosmos-sdk => github.com/bnb-chain/bnc-cosmos-sdk v0.26.6
 	github.com/grpc-ecosystem/grpc-gateway/v2 => github.com/prysmaticlabs/grpc-gateway/v2 v2.3.1-0.20210702154020-550e1cd83ec1
 	github.com/syndtr/goleveldb v1.0.1-0.20220721030215-126854af5e6d => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7

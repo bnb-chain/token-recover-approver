@@ -37,29 +37,6 @@ func (server *HttpServer) GetClaimApproval(w http.ResponseWriter, r *http.Reques
 	server.Response(w, Success, resp, nil)
 }
 
-func (server *HttpServer) GetRegisterTokenApproval(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		server.Response(w, InvalidRequest, nil, err)
-		return
-	}
-	defer r.Body.Close()
-	req := &approval.GetRegisterTokenApprovalRequest{}
-	err = json.Unmarshal(body, req)
-	if err != nil {
-		server.Response(w, InvalidRequest, nil, err)
-		return
-	}
-
-	resp, err := server.approvalService.GetRegisterTokenApproval(req)
-	if err != nil {
-		server.Response(w, InvalidRequest, nil, err)
-		return
-	}
-
-	server.Response(w, Success, resp, nil)
-}
-
 func (server *HttpServer) Response(w http.ResponseWriter, code ResponseCode, data interface{}, err error) {
 	resp := Response{
 		Code:  code,

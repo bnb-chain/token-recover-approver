@@ -1,14 +1,19 @@
 package approval
 
 import (
+	"crypto/sha256"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"math/big"
 
+	"github.com/btcsuite/btcd/btcec/v2"
+	"github.com/btcsuite/btcd/btcec/v2/ecdsa"
 	"github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/crypto"
+	"golang.org/x/crypto/ripemd160"
 
-	// "github.com/tendermint/tendermint/crypto/secp256k1"
+	"github.com/bnb-chain/node/plugins/airdrop"
 
 	"github.com/bnb-chain/airdrop-service/internal/config"
 	"github.com/bnb-chain/airdrop-service/internal/store"
@@ -32,14 +37,19 @@ func NewApprovalService(config *config.Config, km keymanager.KeyManager, store s
 
 func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp *GetClaimApprovalResponse, err error) {
 	// Verify owner signature
+	ownerPubKeyBytes, err := hex.DecodeString(req.OwnerPubKey)
+	if err != nil {
+		return nil, err
+	}
+	ownerAddr, err := svc.getAddressFromPubKey(ownerPubKeyBytes)
+	if err != nil {
+		return nil, err
+	}
 	ownerSignature, err := hex.DecodeString(req.OwnerSignature)
 	if err != nil {
 		return nil, err
 	}
-	var tokenSymbolBytes [32]byte
-	copy(tokenSymbolBytes[:], []byte(req.TokenSymbol))
-	msg := crypto.Keccak256([]byte(RequestTypeClaim), []byte(svc.config.ChainID), tokenSymbolBytes[:], req.ClaimAddress[:])
-	ownerAddr, err := svc.RecoverAddressFromTmSig(msg, ownerSignature)
+
 	if err != nil {
 		return nil, err
 	}
@@ -52,57 +62,86 @@ func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp
 	if err != nil {
 		return nil, err
 	}
-	nodeBytes, err := account.Serialize()
+
+	// Check if token amount is zero
+	if account.SummaryCoins[req.TokenIndex].Amount == 0 {
+		return nil, errors.New("token amount is zero")
+	}
+
+	// Verify user signature
+	approvalMsg := airdrop.NewAirdropApprovalMsg(req.TokenIndex, req.TokenSymbol, uint64(account.SummaryCoins[req.TokenIndex].Amount), req.ClaimAddress.String())
+	hash := sha256.New()
+	hash.Write(approvalMsg.GetSignBytes())
+	msgHash := hash.Sum(nil)
+	err = svc.verifyTmSignature(ownerPubKeyBytes, ownerSignature, msgHash)
 	if err != nil {
 		return nil, err
 	}
-	prefixNode, suffixNode := account.GetPrefixSuffixNode(req.TokenSymbol)
+
+	nodeBytes, err := account.Serialize(uint(req.TokenIndex))
+	if err != nil {
+		return nil, err
+	}
+
+	var tokenSymbolBytes [32]byte
+	copy(tokenSymbolBytes[:], []byte(req.TokenSymbol))
+
 	approvalSignature := crypto.Keccak256([]byte(svc.config.ChainID), tokenSymbolBytes[:], req.ClaimAddress[:], ownerSignature, nodeBytes)
 	return &GetClaimApprovalResponse{
 		Amount:            big.NewInt(account.SummaryCoins.AmountOf(req.TokenSymbol)),
-		PrefixNode:        hex.EncodeToString(prefixNode),
-		SuffixNode:        hex.EncodeToString(suffixNode),
 		Proofs:            proofs,
 		ApprovalSignature: hex.EncodeToString(approvalSignature),
 	}, nil
 }
 
-func (svc *ApprovalService) GetRegisterTokenApproval(req *GetRegisterTokenApprovalRequest) (resp *GetRegisterTokenApprovalResponse, err error) {
-	// Verify owner signature
-	ownerSignature, err := hex.DecodeString(req.OwnerSignature)
+func (svc *ApprovalService) verifyTmSignature(pubkey, signatureStr, msgHash []byte) error {
+	pubKey, err := btcec.ParsePubKey(pubkey)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	var tokenSymbolBytes [32]byte
-	copy(tokenSymbolBytes[:], []byte(req.TokenSymbol))
-	msg := crypto.Keccak256([]byte(RequestTypeRegisterToken), []byte(svc.config.ChainID), tokenSymbolBytes[:], req.RegisterAddress[:])
-	ownerAddr, err := svc.RecoverAddressFromTmSig(msg, ownerSignature)
+
+	r, s, err := svc.signatureFromBytes(signatureStr)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	// Get Asset Owner
-	asset, err := svc.store.GetAssetBySymbol(req.TokenSymbol)
-	if err != nil {
-		return nil, err
+	signature := ecdsa.NewSignature(r, s)
+
+	// Reject malleable signatures. libsecp256k1 does this check but btcec doesn't.
+	if s.IsOverHalfOrder() {
+		return fmt.Errorf("invalid signature")
 	}
-	if !asset.Owner.Equals(ownerAddr) {
-		return nil, errors.New("asset owner not match")
+
+	// Verify the signature.
+	if !signature.Verify(msgHash, pubKey) {
+		return fmt.Errorf("invalid signature")
 	}
-	amount := big.NewInt(asset.Amount)
-	approvalSignature := crypto.Keccak256([]byte(svc.config.ChainID), tokenSymbolBytes[:], req.RegisterAddress[:], ownerSignature, amount.Bytes())
-	return &GetRegisterTokenApprovalResponse{
-		Amount:   amount,
-		Approval: hex.EncodeToString(approvalSignature),
-	}, nil
+
+	return nil
 }
 
-func (svc *ApprovalService) RecoverAddressFromTmSig(msg []byte, sig []byte) (types.AccAddress, error) {
-	// TODO: Implement
+func (svc ApprovalService) getAddressFromPubKey(pubkey []byte) (types.AccAddress, error) {
+	pubKey, err := btcec.ParsePubKey(pubkey)
+	if err != nil {
+		return nil, err
+	}
+	hasherSHA256 := sha256.New()
+	_, _ = hasherSHA256.Write(pubKey.SerializeCompressed()) // does not error
+	sha := hasherSHA256.Sum(nil)
 
-	// pubKey, err := secp256k1.RecoverPubkey(msg, sig)
-	// if err != nil {
-	// 	return nil, err
-	// }
+	hasherRIPEMD160 := ripemd160.New()
+	_, _ = hasherRIPEMD160.Write(sha) // does not error
+	return hasherRIPEMD160.Sum(nil), nil
+}
 
-	return nil, nil
+// Read Signature struct from R || S. Caller needs to ensure
+// that len(sigStr) == 64.
+func (svc ApprovalService) signatureFromBytes(sigStr []byte) (*btcec.ModNScalar, *btcec.ModNScalar, error) {
+	var r, s btcec.ModNScalar
+	if r.SetByteSlice(sigStr[:32]) {
+		return nil, nil, fmt.Errorf("invalid R field")
+	}
+	if s.SetByteSlice(sigStr[32:]) {
+		return nil, nil, fmt.Errorf("invalid S field")
+	}
+	return &r, &s, nil
 }

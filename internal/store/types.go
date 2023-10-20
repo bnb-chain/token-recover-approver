@@ -1,11 +1,16 @@
 package store
 
 import (
-	"bytes"
+	"errors"
 	"math/big"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/crypto"
+)
+
+var (
+	// ErrInvalidTokenIndex is the error returned when the token index is invalid.
+	ErrInvalidTokenIndex = errors.New("invalid token index")
 )
 
 // Account is an  account.
@@ -19,50 +24,23 @@ type Account struct {
 }
 
 // Serialize implements merkle tree data Serialize method.
-func (acc *Account) Serialize() ([]byte, error) {
-	coinBytes := bytes.NewBuffer(nil)
-	for index, coin := range acc.SummaryCoins {
-		coinBytes.Write(tokenHash(int64(index), coin.Denom, coin.Amount))
+func (acc *Account) Serialize(tokenIndex uint) ([]byte, error) {
+	if tokenIndex >= uint(acc.SummaryCoins.Len()) {
+		return nil, ErrInvalidTokenIndex
 	}
+
+	if acc.SummaryCoins[tokenIndex].Amount == 0 {
+		return nil, ErrInvalidTokenIndex
+	}
+
+	var symbol [32]byte
+	copy(symbol[:], acc.SummaryCoins[tokenIndex].Denom)
 	return crypto.Keccak256Hash(
 		acc.Address.Bytes(),
-		big.NewInt(acc.AccountNumber).Bytes(),
-		coinBytes.Bytes(),
-	).Bytes(), nil
-}
-
-func (acc *Account) GetPrefixSuffixNode(symbol string) ([]byte, []byte) {
-	prefixBytes := bytes.NewBuffer(nil)
-	suffixBytes := bytes.NewBuffer(nil)
-
-	prefixBytes.Write(acc.Address.Bytes())
-	prefixBytes.Write(big.NewInt(acc.AccountNumber).Bytes())
-
-	isSplit := false
-	for index, coin := range acc.SummaryCoins {
-		if coin.Denom == symbol {
-			isSplit = true
-			continue
-		}
-
-		if !isSplit {
-			prefixBytes.Write(tokenHash(int64(index), coin.Denom, coin.Amount))
-		} else {
-			suffixBytes.Write(tokenHash(int64(index), coin.Denom, coin.Amount))
-		}
-	}
-
-	return prefixBytes.Bytes(), suffixBytes.Bytes()
-}
-
-func tokenHash(index int64, denom string, amount int64) []byte {
-	var symbol [32]byte
-	copy(symbol[:], denom)
-
-	return crypto.Keccak256Hash(
-		big.NewInt(index).Bytes(),
+		big.NewInt(int64(tokenIndex)).FillBytes(make([]byte, 32)),
 		symbol[:],
-		big.NewInt(amount).Bytes()).Bytes()
+		big.NewInt(acc.SummaryCoins[tokenIndex].Amount).FillBytes(make([]byte, 32)),
+	).Bytes(), nil
 }
 
 // Assets is a map of asset name to amount
