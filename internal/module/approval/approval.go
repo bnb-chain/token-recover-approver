@@ -69,7 +69,7 @@ func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp
 	}
 
 	// Get Merkle Proofs and Node
-	proofs, err := svc.store.GetAccountProofs(ownerAddr)
+	proofs, err := svc.store.GetAccountAssetProofs(ownerAddr, req.TokenSymbol, int64(req.TokenIndex))
 	if err != nil {
 		return nil, err
 	}

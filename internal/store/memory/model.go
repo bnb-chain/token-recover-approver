@@ -28,7 +28,13 @@ type Asset struct {
 	Amount int64          `json:"amount"`
 }
 
+// Proofs is a list of account to merkle proof
+type Proofs []*Proof
+
+// Proof is a merkle proof of an account
 type Proof struct {
 	Address sdk.AccAddress `json:"address"`
-	Proof   []string       `json:"proofs"`
+	Index   int64          `json:"index"`
+	Coin    sdk.Coin       `json:"coin"`
+	Proof   []string       `json:"proof"`
 }

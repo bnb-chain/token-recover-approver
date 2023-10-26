@@ -24,7 +24,7 @@ func (*SQLStore) GetAccountByAddress(address types.AccAddress) (account *store.A
 }
 
 // GetAccountProofs implements store.Store.
-func (*SQLStore) GetAccountProofs(address types.AccAddress) (proofs []string, err error) {
+func (*SQLStore) GetAccountAssetProofs(address types.AccAddress, symbol string, tokenIndex int64) (proofs []string, err error) {
 	panic("unimplemented")
 }
 

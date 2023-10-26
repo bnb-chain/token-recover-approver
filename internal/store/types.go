@@ -13,7 +13,7 @@ var (
 	ErrInvalidTokenIndex = errors.New("invalid token index")
 )
 
-// Account is an  account.
+// Account is an account.
 type Account struct {
 	Address       sdk.AccAddress `json:"address"`
 	AccountNumber int64          `json:"account_number"`
@@ -51,8 +51,16 @@ type Asset struct {
 	Amount int64          `json:"amount"`
 }
 
-// Proofs is a map of account address to merkle proof
-type Proofs map[string][]string
+// Proofs is a list of account to merkle proof
+type Proofs []*Proof
+
+// Proof is a merkle proof of an account
+type Proof struct {
+	Address sdk.AccAddress `json:"address"`
+	Index   int64          `json:"index"`
+	Coin    sdk.Coin       `json:"coin"`
+	Proof   []string       `json:"proof"`
+}
 
 // WorldState is the world state of the store.
 type WorldState struct {

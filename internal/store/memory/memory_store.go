@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"os"
+	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/types"
 
@@ -53,7 +54,7 @@ func NewMemoryStore(chainID, stateRootPath, assetsPath, accountsPath, proofsPath
 		return &Account{}
 	})
 
-	accounts := map[string]*Account{}
+	accounts := make(map[string]*Account)
 	go func() {
 		for data := range stream.Watch() {
 			if data.Error != nil {
@@ -75,7 +76,7 @@ func NewMemoryStore(chainID, stateRootPath, assetsPath, accountsPath, proofsPath
 		return &Proof{}
 	})
 
-	proofs := map[string]*Proof{}
+	proofs := make(map[string]*Proof)
 	go func() {
 		for data := range stream.Watch() {
 			if data.Error != nil {
@@ -83,7 +84,9 @@ func NewMemoryStore(chainID, stateRootPath, assetsPath, accountsPath, proofsPath
 				return
 			}
 			proof := data.Data.(*Proof)
-			proofs[proof.Address.String()] = proof
+			tokenIndexStr := strconv.Itoa(int(proof.Index))
+			index := proof.Address.String() + ":" + tokenIndexStr + ":" + proof.Coin.Denom
+			proofs[index] = proof
 		}
 		errChan <- nil
 	}()
@@ -106,7 +109,7 @@ type MemoryStore struct {
 	stateRoot StateRoot
 	assets    Assets
 	accounts  map[string]*Account
-	proofs    map[string]*Proof
+	proofs    map[string]*Proof // address:index:symbol -> proofs
 }
 
 // GetAccountByAddress implements store.Store.
@@ -127,8 +130,10 @@ func (ss *MemoryStore) GetAccountByAddress(address types.AccAddress) (*store.Acc
 }
 
 // GetAccountProofs implements store.Store.
-func (ss *MemoryStore) GetAccountProofs(address types.AccAddress) ([]string, error) {
-	proofs, exist := ss.proofs[address.String()]
+func (ss *MemoryStore) GetAccountAssetProofs(address types.AccAddress, symbol string, tokenIndex int64) ([]string, error) {
+	tokenIndexStr := strconv.Itoa(int(tokenIndex))
+	index := address.String() + ":" + tokenIndexStr + ":" + symbol
+	proofs, exist := ss.proofs[index]
 	if !exist {
 		return nil, ErrProofNotFound
 	}

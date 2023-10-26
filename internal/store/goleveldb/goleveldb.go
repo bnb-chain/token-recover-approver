@@ -24,7 +24,7 @@ func (*KVStore) GetAccountByAddress(address types.AccAddress) (account *store.Ac
 }
 
 // GetAccountProofs implements store.Store.
-func (*KVStore) GetAccountProofs(address types.AccAddress) (proofs []string, err error) {
+func (*KVStore) GetAccountAssetProofs(address types.AccAddress, symbol string, tokenIndex int64) (proofs []string, err error) {
 	panic("unimplemented")
 }
 
