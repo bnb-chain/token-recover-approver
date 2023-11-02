@@ -3,6 +3,9 @@ package injection
 import (
 	"errors"
 
+	"github.com/rs/zerolog"
+	gormLogger "gorm.io/gorm/logger"
+
 	"github.com/bnb-chain/airdrop-service/internal/common"
 	"github.com/bnb-chain/airdrop-service/internal/config"
 	"github.com/bnb-chain/airdrop-service/internal/store"
@@ -10,7 +13,6 @@ import (
 	"github.com/bnb-chain/airdrop-service/internal/store/gorm"
 	"github.com/bnb-chain/airdrop-service/internal/store/memory"
 	"github.com/cosmos/cosmos-sdk/types"
-	"github.com/rs/zerolog"
 )
 
 type StoreType string
@@ -47,8 +49,14 @@ func InitStore(config *config.Config, logger *zerolog.Logger) (store.Store, erro
 		// TODO: implement
 		return goleveldb.NewKVStore()
 	case GORMStore:
-		// TODO: implement
-		return gorm.NewSQLStore()
+		return gorm.NewSQLStore(
+			config,
+			gorm.SetConnMaxLifetime(config.Store.SqlStore.MaxLifetime),
+			gorm.SetConnMaxIdleTime(config.Store.SqlStore.MaxIdleTime),
+			gorm.SetMaxIdleConns(config.Store.SqlStore.MaxIdleConn),
+			gorm.SetMaxOpenConns(config.Store.SqlStore.MaxOpenConn),
+			gorm.SetLogLevel(gormLogger.LogLevel(config.Store.SqlStore.LogLevel)),
+		)
 	default:
 		return nil, errors.New("invalid store type")
 	}
