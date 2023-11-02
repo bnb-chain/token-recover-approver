@@ -16,7 +16,7 @@ type StateRoot struct {
 
 type Account struct {
 	gorm.Model
-	Address       sdk.AccAddress `json:"address"`
+	Address       sdk.AccAddress `json:"address" gorm:"index"`
 	AccountNumber int64          `json:"account_number"`
 	SummaryCoins  sdk.Coins      `json:"summary_coins,omitempty"`
 	Coins         sdk.Coins      `json:"coins,omitempty"`
@@ -26,14 +26,15 @@ type Account struct {
 
 type Asset struct {
 	gorm.Model
-	Owner  sdk.AccAddress `json:"owner,omitempty"`
+	Owner  sdk.AccAddress `json:"owner,omitempty" gorm:"index"`
 	Amount int64          `json:"amount"`
 }
 
 type Proof struct {
 	gorm.Model
-	Address sdk.AccAddress `json:"address"`
-	Index   int64          `json:"index"`
-	Coin    sdk.Coin       `json:"coin"`
+	Address sdk.AccAddress `json:"address" gorm:"index"`
+	Index   int64          `json:"index" gorm:"index"`
+	Denom   string         `json:"denom" gorm:"index"`
+	Amount  int64          `json:"amount"`
 	Proof   []string       `json:"proof"`
 }
