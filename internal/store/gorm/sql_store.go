@@ -83,6 +83,13 @@ func NewSQLStore(config *config.Config, options ...Option) (*SQLStore, error) {
 		}
 	}
 
+	for _, migration := range Migrations {
+		err := migration.Migrate(engine)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return &SQLStore{
 		db: engine,
 	}, nil
@@ -94,21 +101,52 @@ type SQLStore struct {
 }
 
 // GetAccountByAddress implements store.Store.
-func (*SQLStore) GetAccountByAddress(address types.AccAddress) (account *store.Account, err error) {
-	panic("unimplemented")
+func (s *SQLStore) GetAccountByAddress(address types.AccAddress) (*store.Account, error) {
+	var acc *Account
+	result := s.db.Where("address = ?", address.String()).First(acc)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &store.Account{
+		Address:       acc.Address,
+		AccountNumber: acc.AccountNumber,
+		SummaryCoins:  acc.SummaryCoins,
+		Coins:         acc.Coins,
+		FrozenCoins:   acc.FrozenCoins,
+		LockedCoins:   acc.LockedCoins,
+	}, nil
 }
 
 // GetAccountProofs implements store.Store.
-func (*SQLStore) GetAccountAssetProofs(address types.AccAddress, symbol string, tokenIndex int64) (proofs []string, err error) {
-	panic("unimplemented")
+func (s *SQLStore) GetAccountAssetProofs(address types.AccAddress, symbol string, tokenIndex int64) (proofs []string, err error) {
+	var proof *Proof
+	result := s.db.Where("address = ? AND index = ? AND denom = ?", address.String(), tokenIndex, symbol).First(proof)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return proof.Proof, nil
 }
 
 // GetAssetBySymbol implements store.Store.
-func (*SQLStore) GetAssetBySymbol(symbol string) (asset *store.Asset, err error) {
-	panic("unimplemented")
+func (s *SQLStore) GetAssetBySymbol(symbol string) (asset *store.Asset, err error) {
+	var assetModel *Asset
+	result := s.db.Where("denom = ?", symbol).First(assetModel)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &store.Asset{
+		Owner:  assetModel.Owner,
+		Amount: assetModel.Amount,
+	}, nil
 }
 
 // GetStateRoot implements store.Store.
-func (*SQLStore) GetStateRoot() (stateRoot string, err error) {
-	panic("unimplemented")
+func (s *SQLStore) GetStateRoot() (stateRoot string, err error) {
+	var state *StateRoot
+	result := s.db.First(state)
+	if result.Error != nil {
+		return "", result.Error
+	}
+	return state.StateRoot, nil
 }

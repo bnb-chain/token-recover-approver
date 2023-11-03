@@ -27,6 +27,7 @@ type Account struct {
 type Asset struct {
 	gorm.Model
 	Owner  sdk.AccAddress `json:"owner,omitempty" gorm:"index"`
+	Denom  string         `json:"denom" gorm:"index"`
 	Amount int64          `json:"amount"`
 }
 
@@ -35,6 +36,5 @@ type Proof struct {
 	Address sdk.AccAddress `json:"address" gorm:"index"`
 	Index   int64          `json:"index" gorm:"index"`
 	Denom   string         `json:"denom" gorm:"index"`
-	Amount  int64          `json:"amount"`
 	Proof   []string       `json:"proof"`
 }
