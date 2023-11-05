@@ -17,12 +17,12 @@ type Config struct {
 	HTTP             HTTPConfig   `mapstructure:"http"`
 	Secret           SecretConfig `mapstructure:"secret"`
 	Store            StoreConfig  `mapstructure:"store"`
-	AccountWhileList []string     `mapstructure:"account_while_list"`
+	AccountWhiteList []string     `mapstructure:"account_white_list"`
 }
 
 func defaultConfig(v *viper.Viper) {
 	v.SetDefault("chain_id", "Binance-Chain-Ganges")
-	v.SetDefault("account_while_list", []string{})
+	v.SetDefault("account_white_list", []string{})
 }
 
 type LoggerConfig struct {

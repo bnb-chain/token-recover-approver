@@ -29,23 +29,23 @@ type ApprovalService struct {
 	config           *config.Config
 	km               keymanager.KeyManager
 	store            store.Store
-	accountWhileList map[string]struct{}
+	accountWhiteList map[string]struct{}
 }
 
 func NewApprovalService(config *config.Config, km keymanager.KeyManager, store store.Store) *ApprovalService {
-	accountWhileList := make(map[string]struct{})
-	for _, addr := range config.AccountWhileList {
-		accountWhileList[addr] = struct{}{}
+	accountWhiteList := make(map[string]struct{})
+	for _, addr := range config.AccountWhiteList {
+		accountWhiteList[addr] = struct{}{}
 	}
-	return &ApprovalService{km: km, store: store, config: config, accountWhileList: accountWhileList}
+	return &ApprovalService{km: km, store: store, config: config, accountWhiteList: accountWhiteList}
 }
 
-func (svc *ApprovalService) checkWhileList(acc types.AccAddress) bool {
-	if len(svc.accountWhileList) == 0 {
+func (svc *ApprovalService) checkWhiteList(acc types.AccAddress) bool {
+	if len(svc.accountWhiteList) == 0 {
 		return true
 	}
 
-	_, ok := svc.accountWhileList[acc.String()]
+	_, ok := svc.accountWhiteList[acc.String()]
 	return ok
 }
 
@@ -64,7 +64,7 @@ func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp
 	}
 
 	// Check While List
-	if !svc.checkWhileList(ownerAddr) {
+	if !svc.checkWhiteList(ownerAddr) {
 		return nil, errors.New("address is not in while list")
 	}
 
@@ -81,6 +81,11 @@ func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp
 	// Check if token amount is zero
 	if account.SummaryCoins[req.TokenIndex].Amount == 0 {
 		return nil, errors.New("token amount is zero")
+	}
+
+	merkleRoot, err := svc.store.GetStateRoot()
+	if err != nil {
+		return nil, err
 	}
 
 	// Verify user signature
@@ -101,7 +106,21 @@ func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp
 	var tokenSymbolBytes [32]byte
 	copy(tokenSymbolBytes[:], []byte(req.TokenSymbol))
 
-	approvalSignature := crypto.Keccak256([]byte(svc.config.ChainID), tokenSymbolBytes[:], req.ClaimAddress[:], ownerSignature, nodeBytes)
+	signData := make([][]byte, 0, len(proofs)+5)
+	signData = append(signData, [][]byte{
+		[]byte(svc.config.ChainID), req.ClaimAddress[:], ownerSignature, nodeBytes,
+		[]byte(merkleRoot),
+	}...)
+
+	for _, proof := range proofs {
+		proofBytes, err := hex.DecodeString(proof)
+		if err != nil {
+			return nil, err
+		}
+		signData = append(signData, proofBytes)
+	}
+
+	approvalSignature := crypto.Keccak256(signData...)
 	return &GetClaimApprovalResponse{
 		Amount:            big.NewInt(account.SummaryCoins.AmountOf(req.TokenSymbol)),
 		Proofs:            proofs,
