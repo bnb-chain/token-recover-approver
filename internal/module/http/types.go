@@ -12,7 +12,7 @@ const (
 type Response struct {
 	Code  ResponseCode `json:"code"`
 	Data  interface{}  `json:"data,omitempty"`
-	Error string       `json:"error,omitempty"`
+	Error error        `json:"error,omitempty"`
 }
 
 func (r *Response) Marshal() string {

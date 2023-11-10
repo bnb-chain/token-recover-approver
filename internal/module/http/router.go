@@ -41,7 +41,7 @@ func (server *HttpServer) Response(w http.ResponseWriter, code ResponseCode, dat
 	resp := Response{
 		Code:  code,
 		Data:  data,
-		Error: err.Error(),
+		Error: err,
 	}
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprint(w, resp.Marshal())
