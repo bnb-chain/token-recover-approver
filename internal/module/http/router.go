@@ -27,6 +27,7 @@ func (server *HttpServer) GetClaimApproval(w http.ResponseWriter, r *http.Reques
 		server.Response(w, InvalidRequest, nil, err)
 		return
 	}
+	server.logger.Info().Interface("request", req).Msg("GetClaimApproval")
 
 	err = req.Validate()
 	if err != nil {
