@@ -14,7 +14,7 @@ import (
 
 var _ store.Store = (*MemoryStore)(nil)
 
-func NewMemoryStore(chainID, stateRootPath, assetsPath, accountsPath, proofsPath string) (*MemoryStore, error) {
+func NewMemoryStore(stateRootPath, assetsPath, accountsPath, proofsPath string) (*MemoryStore, error) {
 	// load state root
 	var stateRoot StateRoot
 	stateRootFile, err := os.Open(stateRootPath)

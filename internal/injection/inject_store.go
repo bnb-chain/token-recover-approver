@@ -6,13 +6,14 @@ import (
 	"github.com/rs/zerolog"
 	gormLogger "gorm.io/gorm/logger"
 
+	"github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/bnb-chain/airdrop-service/internal/common"
 	"github.com/bnb-chain/airdrop-service/internal/config"
 	"github.com/bnb-chain/airdrop-service/internal/store"
 	"github.com/bnb-chain/airdrop-service/internal/store/goleveldb"
 	"github.com/bnb-chain/airdrop-service/internal/store/gorm"
 	"github.com/bnb-chain/airdrop-service/internal/store/memory"
-	"github.com/cosmos/cosmos-sdk/types"
 )
 
 type StoreType string
@@ -39,7 +40,6 @@ func InitStore(config *config.Config, logger *zerolog.Logger) (store.Store, erro
 	switch StoreType(config.Store.Driver) {
 	case MemoryStore:
 		return memory.NewMemoryStore(
-			config.ChainID,
 			config.Store.MemoryStore.StateRoot,
 			config.Store.MemoryStore.Assets,
 			config.Store.MemoryStore.Accounts,

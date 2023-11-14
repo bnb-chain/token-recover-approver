@@ -1,7 +1,7 @@
 chain_id: Binance-Chain-Ganges
 
 logger:
-  level: INFO
+  level: DEBUG
   format: console # json, console
 
 http:

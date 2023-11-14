@@ -32,7 +32,7 @@ func Initialize(configPath string) (Application, error) {
 	if err != nil {
 		return Application{}, err
 	}
-	approvalService := approval.NewApprovalService(configConfig, keyManager, store)
+	approvalService := approval.NewApprovalService(configConfig, keyManager, store, logger)
 	httpServer := http.NewHttpServer(approvalService, logger)
 	application := newApplication(logger, configConfig, httpServer)
 	return application, nil

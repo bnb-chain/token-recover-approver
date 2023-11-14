@@ -28,6 +28,12 @@ func (server *HttpServer) GetClaimApproval(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	err = req.Validate()
+	if err != nil {
+		server.Response(w, InvalidRequest, nil, err)
+		return
+	}
+
 	resp, err := server.approvalService.GetClaimApproval(req)
 	if err != nil {
 		server.Response(w, InvalidRequest, nil, err)
@@ -39,9 +45,11 @@ func (server *HttpServer) GetClaimApproval(w http.ResponseWriter, r *http.Reques
 
 func (server *HttpServer) Response(w http.ResponseWriter, code ResponseCode, data interface{}, err error) {
 	resp := Response{
-		Code:  code,
-		Data:  data,
-		Error: err,
+		Code: code,
+		Data: data,
+	}
+	if err != nil {
+		resp.Error = err.Error()
 	}
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprint(w, resp.Marshal())

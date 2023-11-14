@@ -1,19 +1,19 @@
 package approval
 
 import (
-	"crypto/sha256"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"math/big"
 
-	"github.com/btcsuite/btcd/btcec/v2"
-	"github.com/btcsuite/btcd/btcec/v2/ecdsa"
 	"github.com/cosmos/cosmos-sdk/types"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
-	"golang.org/x/crypto/ripemd160"
+	"github.com/rs/zerolog"
+	"github.com/tendermint/tendermint/crypto/secp256k1"
 
+	"github.com/bnb-chain/node/app"
 	"github.com/bnb-chain/node/plugins/airdrop"
+	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 
 	"github.com/bnb-chain/airdrop-service/internal/config"
 	"github.com/bnb-chain/airdrop-service/internal/store"
@@ -21,8 +21,7 @@ import (
 )
 
 const (
-	RequestTypeClaim         = "claim"
-	RequestTypeRegisterToken = "register_token"
+	RequestTypeClaim = "claim"
 )
 
 type ApprovalService struct {
@@ -30,14 +29,16 @@ type ApprovalService struct {
 	km               keymanager.KeyManager
 	store            store.Store
 	accountWhiteList map[string]struct{}
+
+	logger *zerolog.Logger
 }
 
-func NewApprovalService(config *config.Config, km keymanager.KeyManager, store store.Store) *ApprovalService {
+func NewApprovalService(config *config.Config, km keymanager.KeyManager, store store.Store, logger *zerolog.Logger) *ApprovalService {
 	accountWhiteList := make(map[string]struct{})
 	for _, addr := range config.AccountWhiteList {
 		accountWhiteList[addr] = struct{}{}
 	}
-	return &ApprovalService{km: km, store: store, config: config, accountWhiteList: accountWhiteList}
+	return &ApprovalService{km: km, store: store, config: config, accountWhiteList: accountWhiteList, logger: logger}
 }
 
 func (svc *ApprovalService) checkWhiteList(acc types.AccAddress) bool {
@@ -63,6 +64,7 @@ func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp
 		return nil, err
 	}
 
+	svc.logger.Info().Str("address", ownerAddr.String()).Msg("GetClaimApproval")
 	// Check While List
 	if !svc.checkWhiteList(ownerAddr) {
 		return nil, errors.New("address is not in while list")
@@ -77,7 +79,8 @@ func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp
 	if err != nil {
 		return nil, err
 	}
-
+	svc.logger.Debug().Interface("account", account).Msg("GetAccountByAddress")
+	svc.logger.Debug().Interface("proofs", proofs).Msg("GetAccountAssetProofs")
 	// Check if token amount is zero
 	if account.SummaryCoins[req.TokenIndex].Amount == 0 {
 		return nil, errors.New("token amount is zero")
@@ -87,13 +90,16 @@ func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp
 	if err != nil {
 		return nil, err
 	}
+	svc.logger.Debug().Str("state_root", merkleRoot).Msg("GetStateRoot")
 
 	// Verify user signature
-	approvalMsg := airdrop.NewAirdropApprovalMsg(req.TokenIndex, req.TokenSymbol, uint64(account.SummaryCoins[req.TokenIndex].Amount), req.ClaimAddress.String())
-	hash := sha256.New()
-	hash.Write(approvalMsg.GetSignBytes())
-	msgHash := hash.Sum(nil)
-	err = svc.verifyTmSignature(ownerPubKeyBytes, ownerSignature, msgHash)
+	approvalMsg := airdrop.NewAirdropApprovalMsg(req.TokenIndex, req.TokenSymbol, uint64(account.SummaryCoins[req.TokenIndex].Amount), req.ClaimAddress.Hex())
+	msgBytes, err := svc.getStdMsgBytes(approvalMsg)
+	if err != nil {
+		return nil, err
+	}
+	svc.logger.Debug().Str("msg", string(msgBytes)).Msg("GetStdMsgBytes")
+	err = svc.verifyTmSignature(ownerPubKeyBytes, ownerSignature, msgBytes)
 	if err != nil {
 		return nil, err
 	}
@@ -105,15 +111,19 @@ func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp
 
 	var tokenSymbolBytes [32]byte
 	copy(tokenSymbolBytes[:], []byte(req.TokenSymbol))
+	merkleRootBytes, err := hexutil.Decode(merkleRoot)
+	if err != nil {
+		return nil, err
+	}
 
 	signData := make([][]byte, 0, len(proofs)+5)
 	signData = append(signData, [][]byte{
 		[]byte(svc.config.ChainID), req.ClaimAddress[:], ownerSignature, nodeBytes,
-		[]byte(merkleRoot),
+		merkleRootBytes,
 	}...)
 
 	for _, proof := range proofs {
-		proofBytes, err := hex.DecodeString(proof)
+		proofBytes, err := hexutil.Decode(proof)
 		if err != nil {
 			return nil, err
 		}
@@ -121,6 +131,7 @@ func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp
 	}
 
 	approvalSignature := crypto.Keccak256(signData...)
+	svc.logger.Debug().Bytes("approval_signature", approvalSignature).Msg("Signed ApprovalSignature")
 	return &GetClaimApprovalResponse{
 		Amount:            big.NewInt(account.SummaryCoins.AmountOf(req.TokenSymbol)),
 		Proofs:            proofs,
@@ -128,54 +139,28 @@ func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp
 	}, nil
 }
 
-func (svc *ApprovalService) verifyTmSignature(pubkey, signatureStr, msgHash []byte) error {
-	pubKey, err := btcec.ParsePubKey(pubkey)
-	if err != nil {
-		return err
-	}
-
-	r, s, err := svc.signatureFromBytes(signatureStr)
-	if err != nil {
-		return err
-	}
-	signature := ecdsa.NewSignature(r, s)
-
-	// Reject malleable signatures. libsecp256k1 does this check but btcec doesn't.
-	if s.IsOverHalfOrder() {
-		return fmt.Errorf("invalid signature")
-	}
-
-	// Verify the signature.
-	if !signature.Verify(msgHash, pubKey) {
-		return fmt.Errorf("invalid signature")
-	}
-
-	return nil
-}
-
-func (svc ApprovalService) getAddressFromPubKey(pubkey []byte) (types.AccAddress, error) {
-	pubKey, err := btcec.ParsePubKey(pubkey)
+func (svc *ApprovalService) getStdMsgBytes(msg types.Msg) ([]byte, error) {
+	cdc := app.Codec
+	builder := authtxb.NewTxBuilderFromCLI().WithCodec(cdc).WithChainID(svc.config.ChainID)
+	stdMsg, err := builder.Build([]types.Msg{msg})
 	if err != nil {
 		return nil, err
 	}
-	hasherSHA256 := sha256.New()
-	_, _ = hasherSHA256.Write(pubKey.SerializeCompressed()) // does not error
-	sha := hasherSHA256.Sum(nil)
 
-	hasherRIPEMD160 := ripemd160.New()
-	_, _ = hasherRIPEMD160.Write(sha) // does not error
-	return hasherRIPEMD160.Sum(nil), nil
+	return stdMsg.Bytes(), nil
 }
 
-// Read Signature struct from R || S. Caller needs to ensure
-// that len(sigStr) == 64.
-func (svc ApprovalService) signatureFromBytes(sigStr []byte) (*btcec.ModNScalar, *btcec.ModNScalar, error) {
-	var r, s btcec.ModNScalar
-	if r.SetByteSlice(sigStr[:32]) {
-		return nil, nil, fmt.Errorf("invalid R field")
+func (svc *ApprovalService) verifyTmSignature(pubKeyBytes, signatureBytes, msgBytes []byte) error {
+	pubKey := secp256k1.PubKeySecp256k1(pubKeyBytes)
+
+	ok := pubKey.VerifyBytes(msgBytes, signatureBytes)
+	if !ok {
+		return errors.New("verify signature failed")
 	}
-	if s.SetByteSlice(sigStr[32:]) {
-		return nil, nil, fmt.Errorf("invalid S field")
-	}
-	return &r, &s, nil
+	return nil
+}
+
+func (svc ApprovalService) getAddressFromPubKey(pubKeyBytes []byte) (types.AccAddress, error) {
+	pubKey := secp256k1.PubKeySecp256k1(pubKeyBytes)
+	return types.AccAddress(pubKey.Address()), nil
 }
