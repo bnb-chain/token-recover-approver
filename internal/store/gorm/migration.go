@@ -32,7 +32,7 @@ var v202311021600 = &gormigrate.Migration{
 		if err := tx.Migrator().DropTable(&Account{}); err != nil {
 			return err
 		}
-		if err := tx.AutoMigrate(&Proof{}); err != nil {
+		if err := tx.Migrator().DropTable(&Proof{}); err != nil {
 			return err
 		}
 		return nil
