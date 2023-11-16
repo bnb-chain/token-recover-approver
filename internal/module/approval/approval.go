@@ -130,7 +130,10 @@ func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp
 		signData = append(signData, proofBytes)
 	}
 
-	approvalSignature := crypto.Keccak256(signData...)
+	approvalSignature, err := svc.km.Sign(crypto.Keccak256(signData...))
+	if err != nil {
+		return nil, err
+	}
 	svc.logger.Debug().Bytes("approval_signature", approvalSignature).Msg("Signed ApprovalSignature")
 	return &GetClaimApprovalResponse{
 		Amount:            big.NewInt(account.SummaryCoins.AmountOf(req.TokenSymbol)),

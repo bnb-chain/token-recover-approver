@@ -74,7 +74,7 @@ func TestApprovalService_GetClaimApproval(t *testing.T) {
 			wantResp: &GetClaimApprovalResponse{
 				Amount:            big.NewInt(1000000000),
 				Proofs:            []string{"0x5bb1c3643cde99e00a7f32707bad4b06c8ec5b1e4097a97aa3cf7fabfc0b92f7"},
-				ApprovalSignature: "e309cf41cdc9197e636b5f52eb800fc21817443a331179517ca58a4c69f9139a",
+				ApprovalSignature: "e13f9e3b0d4b8da0ade837aaa0f3705bac03aa84ded0c867aa82b9d2f7360dbf11611bd60dee9a0e2e25bbded3400afe50fec9cfab531216e6e0154df06da8b800",
 			},
 			wantErr: false,
 		},
