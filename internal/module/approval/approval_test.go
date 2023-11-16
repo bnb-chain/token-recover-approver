@@ -19,6 +19,7 @@ import (
 const (
 	approvalPrivKey  = "afc2986f283cf5f9d17e04c6a12ccf8fa46149fc37d48e11abef15a46ae34eb7"
 	mockDataBasePath = "../../../example/store"
+	mockMerkleRoot   = "0x5bd43c1c0929f259349cdf93b3b28673e3c98882ae607098a65798efbebfe39c"
 )
 
 func makeMockStore() (store.Store, error) {
@@ -40,9 +41,11 @@ func makeMockSvc() (*ApprovalService, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return NewApprovalService(&config.Config{
-		ChainID: "Binance-Chain-Ganges",
-	}, km, mockStore, &zerolog.Logger{}), nil
+		ChainID:    "Binance-Chain-Ganges",
+		MerkleRoot: mockMerkleRoot,
+	}, km, mockStore, &zerolog.Logger{})
 }
 
 func initSDK() {

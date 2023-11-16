@@ -13,6 +13,7 @@ import (
 
 type Config struct {
 	ChainID          string       `mapstructure:"chain_id"`
+	MerkleRoot       string       `mapstructure:"merkle_root"`
 	Logger           LoggerConfig `mapstructure:"logger"`
 	HTTP             HTTPConfig   `mapstructure:"http"`
 	Secret           SecretConfig `mapstructure:"secret"`
@@ -22,6 +23,7 @@ type Config struct {
 
 func defaultConfig(v *viper.Viper) {
 	v.SetDefault("chain_id", "Binance-Chain-Ganges")
+	v.SetDefault("merkle_root", "0x0000000000000000000000000000000000000000000000000000000000000000")
 	v.SetDefault("account_white_list", []string{})
 }
 

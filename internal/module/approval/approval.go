@@ -26,6 +26,7 @@ const (
 
 type ApprovalService struct {
 	config           *config.Config
+	merkleRoot       []byte
 	km               keymanager.KeyManager
 	store            store.Store
 	accountWhiteList map[string]struct{}
@@ -33,12 +34,16 @@ type ApprovalService struct {
 	logger *zerolog.Logger
 }
 
-func NewApprovalService(config *config.Config, km keymanager.KeyManager, store store.Store, logger *zerolog.Logger) *ApprovalService {
+func NewApprovalService(config *config.Config, km keymanager.KeyManager, store store.Store, logger *zerolog.Logger) (*ApprovalService, error) {
 	accountWhiteList := make(map[string]struct{})
 	for _, addr := range config.AccountWhiteList {
 		accountWhiteList[addr] = struct{}{}
 	}
-	return &ApprovalService{km: km, store: store, config: config, accountWhiteList: accountWhiteList, logger: logger}
+	merkleRoot, err := hexutil.Decode(config.MerkleRoot)
+	if err != nil {
+		return nil, err
+	}
+	return &ApprovalService{km: km, store: store, config: config, merkleRoot: merkleRoot, accountWhiteList: accountWhiteList, logger: logger}, nil
 }
 
 func (svc *ApprovalService) checkWhiteList(acc types.AccAddress) bool {
