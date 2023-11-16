@@ -118,35 +118,12 @@ func (s *SQLStore) GetAccountByAddress(address types.AccAddress) (*store.Account
 	}, nil
 }
 
-// GetAccountProofs implements store.Store.
-func (s *SQLStore) GetAccountAssetProofs(address types.AccAddress, symbol string, tokenIndex int64) (proofs []string, err error) {
+// GetAccountProof implements store.Store.
+func (s *SQLStore) GetAccountAssetProof(address types.AccAddress, symbol string) (proofs [][]byte, err error) {
 	var proof *Proof
-	result := s.db.Where("address = ? AND index = ? AND denom = ?", address.String(), tokenIndex, symbol).First(proof)
+	result := s.db.Where("address = ? AND denom = ?", address.String(), symbol).First(proof)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 	return proof.Proof, nil
-}
-
-// GetAssetBySymbol implements store.Store.
-func (s *SQLStore) GetAssetBySymbol(symbol string) (asset *store.Asset, err error) {
-	var assetModel *Asset
-	result := s.db.Where("denom = ?", symbol).First(assetModel)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-	return &store.Asset{
-		Owner:  assetModel.Owner,
-		Amount: assetModel.Amount,
-	}, nil
-}
-
-// GetStateRoot implements store.Store.
-func (s *SQLStore) GetStateRoot() (stateRoot string, err error) {
-	var state *StateRoot
-	result := s.db.First(state)
-	if result.Error != nil {
-		return "", result.Error
-	}
-	return state.StateRoot, nil
 }

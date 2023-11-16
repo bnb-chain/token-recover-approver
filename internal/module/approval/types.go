@@ -1,14 +1,22 @@
 package approval
 
 import (
-	"errors"
+	"encoding/json"
 	"math/big"
 
+	"github.com/pkg/errors"
+
+	"github.com/bnb-chain/airdrop-service/pkg/util"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
+)
+
+const (
+	PubKeyLength    = 33
+	SignatureLength = 64
 )
 
 type GetClaimApprovalRequest struct {
-	TokenIndex     uint64         `json:"token_index" validate:"required"`
 	TokenSymbol    string         `json:"token_symbol" validate:"required"`
 	OwnerPubKey    string         `json:"owner_pub_key" validate:"required"`
 	OwnerSignature string         `json:"owner_signature" validate:"required"`
@@ -20,11 +28,42 @@ func (req *GetClaimApprovalRequest) Validate() error {
 		return errors.New("claim address is empty")
 	}
 
+	pubKey, err := hexutil.Decode(req.OwnerPubKey)
+	if err != nil {
+		return errors.Wrap(err, "decode owner public key")
+	}
+
+	if len(pubKey) != PubKeyLength {
+		return errors.New("invalid owner public key")
+	}
+
+	signature, err := hexutil.Decode(req.OwnerSignature)
+	if err != nil {
+		return errors.Wrap(err, "decode owner signature")
+	}
+
+	if len(signature) != SignatureLength {
+		return errors.New("invalid owner signature")
+	}
+
 	return nil
 }
 
 type GetClaimApprovalResponse struct {
 	Amount            *big.Int `json:"amount"`
-	Proofs            []string `json:"proofs"`
-	ApprovalSignature string   `json:"approval_signature"`
+	Proofs            [][]byte `json:"proofs"`
+	ApprovalSignature []byte   `json:"approval_signature"`
+}
+
+func (resp *GetClaimApprovalResponse) MarshalJSON() ([]byte, error) {
+	type aliasGetClaimApprovalResponse struct {
+		Amount            *big.Int `json:"amount"`
+		Proofs            []string `json:"proofs"`
+		ApprovalSignature string   `json:"approval_signature"`
+	}
+	return json.Marshal(&aliasGetClaimApprovalResponse{
+		Amount:            resp.Amount,
+		Proofs:            util.EncodeBytesArrayToHex(resp.Proofs),
+		ApprovalSignature: hexutil.Encode(resp.ApprovalSignature),
+	})
 }

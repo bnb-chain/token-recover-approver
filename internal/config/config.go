@@ -76,8 +76,6 @@ type StoreConfig struct {
 }
 
 type MemoryStoreConfig struct {
-	StateRoot    string `mapstructure:"state_root"`
-	Assets       string `mapstructure:"assets"`
 	Accounts     string `mapstructure:"accounts"`
 	MerkleProofs string `mapstructure:"merkle_proofs"`
 }
@@ -105,8 +103,6 @@ func defaultStoreConfig(v *viper.Viper) {
 	v.SetDefault("store.driver", "memory")
 
 	// memory store
-	v.SetDefault("store.memory_store.state_root", "./example/state_root.json")
-	v.SetDefault("store.memory_store.assets", "./example/assets.json")
 	v.SetDefault("store.memory_store.accounts", "./example/accounts.json")
 	v.SetDefault("store.memory_store.merkle_proofs", "./example/merkle_proofs.json")
 

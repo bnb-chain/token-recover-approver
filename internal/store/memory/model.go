@@ -1,16 +1,11 @@
 package memory
 
 import (
+	"encoding/json"
+
+	"github.com/bnb-chain/airdrop-service/pkg/util"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
-
-func init() {
-	sdk.GetConfig().GetBech32AccountAddrPrefix()
-}
-
-type StateRoot struct {
-	StateRoot string `json:"state_root"`
-}
 
 type Account struct {
 	Address       sdk.AccAddress `json:"address"`
@@ -21,20 +16,31 @@ type Account struct {
 	LockedCoins   sdk.Coins      `json:"locked_coins,omitempty"`
 }
 
-type Assets map[string]*Asset
-
-type Asset struct {
-	Owner  sdk.AccAddress `json:"owner,omitempty"`
-	Amount int64          `json:"amount"`
-}
-
 // Proofs is a list of account to merkle proof
 type Proofs []*Proof
 
 // Proof is a merkle proof of an account
 type Proof struct {
 	Address sdk.AccAddress `json:"address"`
-	Index   int64          `json:"index"`
 	Coin    sdk.Coin       `json:"coin"`
-	Proof   []string       `json:"proof"`
+	Proof   [][]byte       `json:"proof"`
+}
+
+func (p *Proof) UnmarshalJSON(data []byte) error {
+	var source = struct {
+		Address sdk.AccAddress `json:"address"`
+		Coin    sdk.Coin       `json:"coin"`
+		Proof   []string       `json:"proof"`
+	}{}
+
+	err := json.Unmarshal(data, &source)
+	if err != nil {
+		return err
+	}
+
+	p.Address = source.Address
+	p.Coin = source.Coin
+	p.Proof = util.MustDecodeHexArrayToBytes(source.Proof)
+
+	return nil
 }

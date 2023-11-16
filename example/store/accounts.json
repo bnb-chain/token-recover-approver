@@ -1,38 +1,37 @@
-[
-    {
-        "address": "tbnb1x5s8dpmwfrfpd7hs9fchjt57n7a06dx7v8f8jm",
-        "account_number": 1
-    },
-    {
-        "address": "tbnb1lgajy7kllr4pwpsf3y58z5rk6a54ntnvmal6cw",
-        "account_number": 2,
-        "summary_coins": [
-            {
-                "denom": "BNB",
-                "amount": 1000000000
-            }
-        ],
-        "coins": [
-            {
-                "denom": "BNB",
-                "amount": 1000000000
-            }
-        ]
-    },
-    {
-        "address": "tbnb1mh4nz2lse6fmnylsl0zu7pg2ywwxucl4asxkzh",
-        "account_number": 0,
-        "summary_coins": [
-            {
-                "denom": "BNB",
-                "amount": 19999999000000000
-            }
-        ],
-        "coins": [
-            {
-                "denom": "BNB",
-                "amount": 19999999000000000
-            }
-        ]
-    }
+[{
+	"address": "tbnb1rhf0wkz8d6a4d3hlz9zjuzj25zmfcza9avdaju",
+	"account_number": 1
+}
+,{
+	"address": "tbnb1wf7d5t6afrm05zmq9hw66uguae85cpsjcpddtw",
+	"account_number": 0,
+	"summary_coins": [
+		{
+			"denom": "BNB",
+			"amount": 19999999000000000
+		}
+	],
+	"coins": [
+		{
+			"denom": "BNB",
+			"amount": 19999999000000000
+		}
+	]
+}
+,{
+	"address": "tbnb1lgajy7kllr4pwpsf3y58z5rk6a54ntnvmal6cw",
+	"account_number": 2,
+	"summary_coins": [
+		{
+			"denom": "BNB",
+			"amount": 1000000000
+		}
+	],
+	"coins": [
+		{
+			"denom": "BNB",
+			"amount": 1000000000
+		}
+	]
+}
 ]

@@ -1,4 +1,15 @@
 [{
+	"address": "tbnb1wf7d5t6afrm05zmq9hw66uguae85cpsjcpddtw",
+	"index": 0,
+	"coin": {
+		"denom": "BNB",
+		"amount": 19999999000000000
+	},
+	"proof": [
+		"0x217d9cf5132114f0964215a1bf73a7403d5db2ddeecf47d62ad07e696a4a689d"
+	]
+}
+,{
 	"address": "tbnb1lgajy7kllr4pwpsf3y58z5rk6a54ntnvmal6cw",
 	"index": 0,
 	"coin": {
@@ -6,18 +17,7 @@
 		"amount": 1000000000
 	},
 	"proof": [
-		"0x5bb1c3643cde99e00a7f32707bad4b06c8ec5b1e4097a97aa3cf7fabfc0b92f7"
-	]
-}
-,{
-	"address": "tbnb1mh4nz2lse6fmnylsl0zu7pg2ywwxucl4asxkzh",
-	"index": 0,
-	"coin": {
-		"denom": "BNB",
-		"amount": 19999999000000000
-	},
-	"proof": [
-		"0xc8d16a02c0378be9f97d22beedca4718cecc9c9180cccccacccb72598dcd38cc"
+		"0x679c555951fde6f1e516549283ef67bd4f32c9058f72e41e3cacdfc337410f3e"
 	]
 }
 ]

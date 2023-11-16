@@ -11,7 +11,6 @@ import (
 	"github.com/bnb-chain/airdrop-service/internal/common"
 	"github.com/bnb-chain/airdrop-service/internal/config"
 	"github.com/bnb-chain/airdrop-service/internal/store"
-	"github.com/bnb-chain/airdrop-service/internal/store/goleveldb"
 	"github.com/bnb-chain/airdrop-service/internal/store/gorm"
 	"github.com/bnb-chain/airdrop-service/internal/store/memory"
 )
@@ -40,14 +39,9 @@ func InitStore(config *config.Config, logger *zerolog.Logger) (store.Store, erro
 	switch StoreType(config.Store.Driver) {
 	case MemoryStore:
 		return memory.NewMemoryStore(
-			config.Store.MemoryStore.StateRoot,
-			config.Store.MemoryStore.Assets,
 			config.Store.MemoryStore.Accounts,
 			config.Store.MemoryStore.MerkleProofs,
 		)
-	case LevelDBStore:
-		// TODO: implement
-		return goleveldb.NewKVStore()
 	case GORMStore:
 		return gorm.NewSQLStore(
 			config,

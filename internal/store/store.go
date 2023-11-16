@@ -5,8 +5,6 @@ import (
 )
 
 type Store interface {
-	GetStateRoot() (stateRoot string, err error)
-	GetAssetBySymbol(symbol string) (asset *Asset, err error)
 	GetAccountByAddress(address sdk.AccAddress) (account *Account, err error)
-	GetAccountAssetProofs(address sdk.AccAddress, symbol string, tokenIndex int64) (proofs []string, err error)
+	GetAccountAssetProof(address sdk.AccAddress, symbol string) (proofs [][]byte, err error)
 }

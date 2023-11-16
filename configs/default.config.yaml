@@ -17,7 +17,5 @@ secret:
 store:
   driver: memory
   memory_store:
-    state_root: ./example/store/state_root.json
-    assets: ./example/store/assets.json
     accounts: ./example/store/accounts.json
     merkle_proofs: ./example/store/merkle_proofs.json

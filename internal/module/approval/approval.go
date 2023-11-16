@@ -1,7 +1,6 @@
 package approval
 
 import (
-	"encoding/hex"
 	"errors"
 	"math/big"
 
@@ -56,7 +55,7 @@ func (svc *ApprovalService) checkWhiteList(acc types.AccAddress) bool {
 }
 
 func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp *GetClaimApprovalResponse, err error) {
-	ownerPubKeyBytes, err := hex.DecodeString(req.OwnerPubKey)
+	ownerPubKeyBytes, err := hexutil.Decode(req.OwnerPubKey)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +63,7 @@ func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp
 	if err != nil {
 		return nil, err
 	}
-	ownerSignature, err := hex.DecodeString(req.OwnerSignature)
+	ownerSignature, err := hexutil.Decode(req.OwnerSignature)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +75,7 @@ func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp
 	}
 
 	// Get Merkle Proofs and Node
-	proofs, err := svc.store.GetAccountAssetProofs(ownerAddr, req.TokenSymbol, int64(req.TokenIndex))
+	proofs, err := svc.store.GetAccountAssetProof(ownerAddr, req.TokenSymbol)
 	if err != nil {
 		return nil, err
 	}
@@ -87,18 +86,11 @@ func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp
 	svc.logger.Debug().Interface("account", account).Msg("GetAccountByAddress")
 	svc.logger.Debug().Interface("proofs", proofs).Msg("GetAccountAssetProofs")
 	// Check if token amount is zero
-	if account.SummaryCoins[req.TokenIndex].Amount == 0 {
+	if account.SummaryCoins.AmountOf(req.TokenSymbol) == 0 {
 		return nil, errors.New("token amount is zero")
 	}
-
-	merkleRoot, err := svc.store.GetStateRoot()
-	if err != nil {
-		return nil, err
-	}
-	svc.logger.Debug().Str("state_root", merkleRoot).Msg("GetStateRoot")
-
 	// Verify user signature
-	approvalMsg := airdrop.NewAirdropApprovalMsg(req.TokenIndex, req.TokenSymbol, uint64(account.SummaryCoins[req.TokenIndex].Amount), req.ClaimAddress.Hex())
+	approvalMsg := airdrop.NewAirdropApprovalMsg(req.TokenSymbol, uint64(account.SummaryCoins.AmountOf(req.TokenSymbol)), req.ClaimAddress.Hex())
 	msgBytes, err := svc.getStdMsgBytes(approvalMsg)
 	if err != nil {
 		return nil, err
@@ -109,31 +101,20 @@ func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp
 		return nil, err
 	}
 
-	nodeBytes, err := account.Serialize(uint(req.TokenIndex))
+	nodeBytes, err := account.Serialize(req.TokenSymbol)
 	if err != nil {
 		return nil, err
 	}
 
 	var tokenSymbolBytes [32]byte
 	copy(tokenSymbolBytes[:], []byte(req.TokenSymbol))
-	merkleRootBytes, err := hexutil.Decode(merkleRoot)
-	if err != nil {
-		return nil, err
-	}
 
 	signData := make([][]byte, 0, len(proofs)+5)
 	signData = append(signData, [][]byte{
 		[]byte(svc.config.ChainID), req.ClaimAddress[:], ownerSignature, nodeBytes,
-		merkleRootBytes,
+		svc.merkleRoot,
 	}...)
-
-	for _, proof := range proofs {
-		proofBytes, err := hexutil.Decode(proof)
-		if err != nil {
-			return nil, err
-		}
-		signData = append(signData, proofBytes)
-	}
+	signData = append(signData, proofs...)
 
 	approvalSignature, err := svc.km.Sign(crypto.Keccak256(signData...))
 	if err != nil {
@@ -143,7 +124,7 @@ func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp
 	return &GetClaimApprovalResponse{
 		Amount:            big.NewInt(account.SummaryCoins.AmountOf(req.TokenSymbol)),
 		Proofs:            proofs,
-		ApprovalSignature: hex.EncodeToString(approvalSignature),
+		ApprovalSignature: approvalSignature,
 	}, nil
 }
 

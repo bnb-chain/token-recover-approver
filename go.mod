@@ -116,8 +116,8 @@ require (
 replace (
 	github.com/Shopify/sarama v1.26.1 => github.com/Shopify/sarama v1.21.0
 	// TODO: bump to official version
-	github.com/bnb-chain/node => github.com/j75689/node v0.10.1-0.20230929155358-732f6df2f9d4
-	github.com/cosmos/cosmos-sdk => github.com/j75689/bnc-cosmos-sdk v0.0.0-20230828031047-de8de0dae3cf //github.com/bnb-chain/bnc-cosmos-sdk v0.26.6
+	github.com/bnb-chain/node => github.com/j75689/node v0.10.1-0.20231116073738-a3e37ebce015
+	github.com/cosmos/cosmos-sdk => github.com/j75689/bnc-cosmos-sdk v0.0.0-20231116051639-004e73216f5d //github.com/bnb-chain/bnc-cosmos-sdk v0.26.6
 
 	github.com/grpc-ecosystem/grpc-gateway/v2 => github.com/prysmaticlabs/grpc-gateway/v2 v2.3.1-0.20210702154020-550e1cd83ec1
 	github.com/syndtr/goleveldb v1.0.1-0.20220721030215-126854af5e6d => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7

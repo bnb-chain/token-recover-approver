@@ -24,31 +24,18 @@ type Account struct {
 }
 
 // Serialize implements merkle tree data Serialize method.
-func (acc *Account) Serialize(tokenIndex uint) ([]byte, error) {
-	if tokenIndex >= uint(acc.SummaryCoins.Len()) {
-		return nil, ErrInvalidTokenIndex
-	}
-
-	if acc.SummaryCoins[tokenIndex].Amount == 0 {
+func (acc *Account) Serialize(tokenSymbol string) ([]byte, error) {
+	if acc.SummaryCoins.AmountOf(tokenSymbol) == 0 {
 		return nil, ErrInvalidTokenIndex
 	}
 
 	var symbol [32]byte
-	copy(symbol[:], acc.SummaryCoins[tokenIndex].Denom)
+	copy(symbol[:], tokenSymbol)
 	return crypto.Keccak256Hash(
 		acc.Address.Bytes(),
-		big.NewInt(int64(tokenIndex)).FillBytes(make([]byte, 32)),
 		symbol[:],
-		big.NewInt(acc.SummaryCoins[tokenIndex].Amount).FillBytes(make([]byte, 32)),
+		big.NewInt(acc.SummaryCoins.AmountOf(tokenSymbol)).FillBytes(make([]byte, 32)),
 	).Bytes(), nil
-}
-
-// Assets is a map of asset name to amount
-type Assets map[string]*Asset
-
-type Asset struct {
-	Owner  sdk.AccAddress `json:"owner,omitempty"`
-	Amount int64          `json:"amount"`
 }
 
 // Proofs is a list of account to merkle proof
@@ -59,16 +46,5 @@ type Proof struct {
 	Address sdk.AccAddress `json:"address"`
 	Index   int64          `json:"index"`
 	Coin    sdk.Coin       `json:"coin"`
-	Proof   []string       `json:"proof"`
-}
-
-// WorldState is the world state of the store.
-type WorldState struct {
-	ChainID     string       `json:"chain_id"`
-	BlockHeight int64        `json:"block_height"`
-	CommitID    sdk.CommitID `json:"commit_id"`
-	Accounts    []*Account   `json:"accounts"`
-	Assets      Assets       `json:"assets"`
-	StateRoot   string       `json:"state_root"`
-	Proofs      Proofs       `json:"proofs"`
+	Proof   [][]byte       `json:"proof"`
 }

@@ -14,6 +14,7 @@ import (
 	"github.com/bnb-chain/airdrop-service/internal/store"
 	"github.com/bnb-chain/airdrop-service/internal/store/memory"
 	"github.com/bnb-chain/airdrop-service/pkg/keymanager/local"
+	"github.com/bnb-chain/airdrop-service/pkg/util"
 )
 
 const (
@@ -25,8 +26,6 @@ const (
 func makeMockStore() (store.Store, error) {
 	initSDK()
 	return memory.NewMemoryStore(
-		path.Join(mockDataBasePath, "state_root.json"),
-		path.Join(mockDataBasePath, "assets.json"),
 		path.Join(mockDataBasePath, "accounts.json"),
 		path.Join(mockDataBasePath, "merkle_proofs.json"),
 	)
@@ -67,17 +66,16 @@ func TestApprovalService_GetClaimApproval(t *testing.T) {
 			name: "test case 1",
 			args: args{
 				req: &GetClaimApprovalRequest{
-					TokenIndex:     0,
 					TokenSymbol:    "BNB",
-					OwnerPubKey:    "0278caa4d6321aa856d6341dd3e8bcdfe0b55901548871c63c3f5cec43c2ae88a9",
-					OwnerSignature: "a7af9a82c98d14de0e7d071b67b740e6a4e265cf787e97f21d628840d2a2d33a41e1d550bd57009b153a0c9ce228a7e0e02b3a8f53e18699b2f13fa13bb809c7",
+					OwnerPubKey:    "0x0278caa4d6321aa856d6341dd3e8bcdfe0b55901548871c63c3f5cec43c2ae88a9",
+					OwnerSignature: "0xd61d30f94b1e69a27bb148c8e3d4ae485cfb8df5cbdc223349292e49a55789f63bcb09438f572cbc8aa56a96a892db3f291de7e1e7e182994bd898c155f028d4",
 					ClaimAddress:   common.HexToAddress("0x5B38Da6a701c568545dCfcB03FcB875f56beddC4"),
 				},
 			},
 			wantResp: &GetClaimApprovalResponse{
 				Amount:            big.NewInt(1000000000),
-				Proofs:            []string{"0x5bb1c3643cde99e00a7f32707bad4b06c8ec5b1e4097a97aa3cf7fabfc0b92f7"},
-				ApprovalSignature: "e13f9e3b0d4b8da0ade837aaa0f3705bac03aa84ded0c867aa82b9d2f7360dbf11611bd60dee9a0e2e25bbded3400afe50fec9cfab531216e6e0154df06da8b800",
+				Proofs:            util.MustDecodeHexArrayToBytes([]string{"0x679c555951fde6f1e516549283ef67bd4f32c9058f72e41e3cacdfc337410f3e"}),
+				ApprovalSignature: util.MustDecodeHexToBytes("0xe6e271d06d4795fbd6d8c66133adbe0c2341fe50e4c2b0e4ee9a939b3ac4f4cf05832ea789b6eaa52bde40d1e41f8ec7a8981004fde0db6ca37ba26a43a6d80001"),
 			},
 			wantErr: false,
 		},
