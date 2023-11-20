@@ -113,10 +113,7 @@ func (s *SQLStore) GetAccountByAddress(address types.AccAddress) (*store.Account
 	return &store.Account{
 		Address:       acc.Address,
 		AccountNumber: acc.AccountNumber,
-		SummaryCoins:  acc.SummaryCoins,
 		Coins:         acc.Coins,
-		FrozenCoins:   acc.FrozenCoins,
-		LockedCoins:   acc.LockedCoins,
 	}, nil
 }
 

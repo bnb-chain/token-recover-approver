@@ -5,12 +5,6 @@
 ,{
 	"address": "tbnb1wf7d5t6afrm05zmq9hw66uguae85cpsjcpddtw",
 	"account_number": 0,
-	"summary_coins": [
-		{
-			"denom": "BNB",
-			"amount": 19999999000000000
-		}
-	],
 	"coins": [
 		{
 			"denom": "BNB",
@@ -21,12 +15,6 @@
 ,{
 	"address": "tbnb1lgajy7kllr4pwpsf3y58z5rk6a54ntnvmal6cw",
 	"account_number": 2,
-	"summary_coins": [
-		{
-			"denom": "BNB",
-			"amount": 1000000000
-		}
-	],
 	"coins": [
 		{
 			"denom": "BNB",

@@ -86,11 +86,11 @@ func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp
 	svc.logger.Debug().Interface("account", account).Msg("GetAccountByAddress")
 	svc.logger.Debug().Interface("proofs", proofs).Msg("GetAccountAssetProofs")
 	// Check if token amount is zero
-	if account.SummaryCoins.AmountOf(req.TokenSymbol) == 0 {
+	if account.Coins.AmountOf(req.TokenSymbol) == 0 {
 		return nil, errors.New("token amount is zero")
 	}
 	// Verify user signature
-	approvalMsg := airdrop.NewAirdropApprovalMsg(req.TokenSymbol, uint64(account.SummaryCoins.AmountOf(req.TokenSymbol)), req.ClaimAddress.Hex())
+	approvalMsg := airdrop.NewAirdropApprovalMsg(req.TokenSymbol, uint64(account.Coins.AmountOf(req.TokenSymbol)), req.ClaimAddress.Hex())
 	msgBytes, err := svc.getStdMsgBytes(approvalMsg)
 	if err != nil {
 		return nil, err
@@ -122,7 +122,7 @@ func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp
 	}
 	svc.logger.Debug().Bytes("approval_signature", approvalSignature).Msg("Signed ApprovalSignature")
 	return &GetClaimApprovalResponse{
-		Amount:            big.NewInt(account.SummaryCoins.AmountOf(req.TokenSymbol)),
+		Amount:            big.NewInt(account.Coins.AmountOf(req.TokenSymbol)),
 		Proofs:            proofs,
 		ApprovalSignature: approvalSignature,
 	}, nil

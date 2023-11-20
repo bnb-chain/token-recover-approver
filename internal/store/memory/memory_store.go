@@ -80,10 +80,7 @@ func (ss *MemoryStore) GetAccountByAddress(address types.AccAddress) (*store.Acc
 	return &store.Account{
 		Address:       acc.Address,
 		AccountNumber: acc.AccountNumber,
-		SummaryCoins:  acc.SummaryCoins,
 		Coins:         acc.Coins,
-		FrozenCoins:   acc.FrozenCoins,
-		LockedCoins:   acc.LockedCoins,
 	}, nil
 }
 

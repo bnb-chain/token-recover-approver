@@ -17,15 +17,12 @@ var (
 type Account struct {
 	Address       sdk.AccAddress `json:"address"`
 	AccountNumber int64          `json:"account_number"`
-	SummaryCoins  sdk.Coins      `json:"summary_coins,omitempty"`
 	Coins         sdk.Coins      `json:"coins,omitempty"`
-	FrozenCoins   sdk.Coins      `json:"frozen_coins,omitempty"`
-	LockedCoins   sdk.Coins      `json:"locked_coins,omitempty"`
 }
 
 // Serialize implements merkle tree data Serialize method.
 func (acc *Account) Serialize(tokenSymbol string) ([]byte, error) {
-	if acc.SummaryCoins.AmountOf(tokenSymbol) == 0 {
+	if acc.Coins.AmountOf(tokenSymbol) == 0 {
 		return nil, ErrInvalidTokenIndex
 	}
 
@@ -34,7 +31,7 @@ func (acc *Account) Serialize(tokenSymbol string) ([]byte, error) {
 	return crypto.Keccak256Hash(
 		acc.Address.Bytes(),
 		symbol[:],
-		big.NewInt(acc.SummaryCoins.AmountOf(tokenSymbol)).FillBytes(make([]byte, 32)),
+		big.NewInt(acc.Coins.AmountOf(tokenSymbol)).FillBytes(make([]byte, 32)),
 	).Bytes(), nil
 }
 

@@ -10,10 +10,7 @@ import (
 type Account struct {
 	Address       sdk.AccAddress `json:"address"`
 	AccountNumber int64          `json:"account_number"`
-	SummaryCoins  sdk.Coins      `json:"summary_coins,omitempty"`
 	Coins         sdk.Coins      `json:"coins,omitempty"`
-	FrozenCoins   sdk.Coins      `json:"frozen_coins,omitempty"`
-	LockedCoins   sdk.Coins      `json:"locked_coins,omitempty"`
 }
 
 // Proofs is a list of account to merkle proof
