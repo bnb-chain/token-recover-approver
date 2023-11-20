@@ -31,7 +31,6 @@ func initSDK(config *config.Config, logger *zerolog.Logger) {
 		sdkConfig.SetBech32PrefixForAccount("tbnb", "bnbp")
 		logger.Debug().Str("chain_id", config.ChainID).Msg("set bech32 prefix to tbnb")
 	}
-
 }
 
 func InitStore(config *config.Config, logger *zerolog.Logger) (store.Store, error) {

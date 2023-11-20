@@ -3,6 +3,7 @@ package gorm
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"gorm.io/gorm"
@@ -15,6 +16,7 @@ import (
 
 	"github.com/bnb-chain/airdrop-service/internal/config"
 	"github.com/bnb-chain/airdrop-service/internal/store"
+	"github.com/bnb-chain/airdrop-service/pkg/util"
 )
 
 type DataSourceTypeName string
@@ -125,5 +127,6 @@ func (s *SQLStore) GetAccountAssetProof(address types.AccAddress, symbol string)
 	if result.Error != nil {
 		return nil, result.Error
 	}
-	return proof.Proof, nil
+
+	return util.MustDecodeHexArrayToBytes(strings.Split(proof.Proof, ",")), nil
 }

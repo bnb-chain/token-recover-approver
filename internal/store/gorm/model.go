@@ -19,5 +19,5 @@ type Proof struct {
 	gorm.Model
 	Address sdk.AccAddress `json:"address" gorm:"index"`
 	Denom   string         `json:"denom" gorm:"index"`
-	Proof   [][]byte       `json:"proof"`
+	Proof   string         `json:"proof"`
 }
