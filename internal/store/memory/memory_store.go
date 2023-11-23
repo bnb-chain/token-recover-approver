@@ -70,26 +70,22 @@ type MemoryStore struct {
 	proofs   map[string]*Proof // address:index:symbol -> proofs
 }
 
-// GetAccountByAddress implements store.Store.
-func (ss *MemoryStore) GetAccountByAddress(address types.AccAddress) (*store.Account, error) {
+// GetAccountProofs implements store.Store.
+func (ss *MemoryStore) GetAccountAssetProof(address types.AccAddress, symbol string) (*store.Proof, error) {
 	acc, exist := ss.accounts[address.String()]
 	if !exist {
 		return nil, ErrAccountNotFound
 	}
 
-	return &store.Account{
-		Address:       acc.Address,
-		AccountNumber: acc.AccountNumber,
-		Coins:         acc.Coins,
-	}, nil
-}
-
-// GetAccountProofs implements store.Store.
-func (ss *MemoryStore) GetAccountAssetProof(address types.AccAddress, symbol string) ([][]byte, error) {
 	index := address.String() + ":" + symbol
 	proofs, exist := ss.proofs[index]
 	if !exist {
 		return nil, ErrProofNotFound
 	}
-	return proofs.Proof, nil
+	return &store.Proof{
+		Address: acc.Address,
+		Denom:   proofs.Coin.Denom,
+		Amount:  acc.Coins.AmountOf(proofs.Coin.Denom),
+		Proof:   proofs.Proof,
+	}, nil
 }

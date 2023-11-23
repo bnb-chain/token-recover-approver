@@ -9,39 +9,29 @@ import (
 )
 
 var (
-	// ErrInvalidTokenIndex is the error returned when the token index is invalid.
-	ErrInvalidTokenIndex = errors.New("invalid token index")
+	// ErrInvalidToken is returned when the token is not found in the merkle tree
+	ErrInvalidToken = errors.New("invalid token")
 )
-
-// Account is an account.
-type Account struct {
-	Address       sdk.AccAddress `json:"address"`
-	AccountNumber int64          `json:"account_number"`
-	Coins         sdk.Coins      `json:"coins,omitempty"`
-}
-
-// Serialize implements merkle tree data Serialize method.
-func (acc *Account) Serialize(tokenSymbol string) ([]byte, error) {
-	if acc.Coins.AmountOf(tokenSymbol) == 0 {
-		return nil, ErrInvalidTokenIndex
-	}
-
-	var symbol [32]byte
-	copy(symbol[:], tokenSymbol)
-	return crypto.Keccak256Hash(
-		acc.Address.Bytes(),
-		symbol[:],
-		big.NewInt(acc.Coins.AmountOf(tokenSymbol)).FillBytes(make([]byte, 32)),
-	).Bytes(), nil
-}
-
-// Proofs is a list of account to merkle proof
-type Proofs []*Proof
 
 // Proof is a merkle proof of an account
 type Proof struct {
 	Address sdk.AccAddress `json:"address"`
-	Index   int64          `json:"index"`
-	Coin    sdk.Coin       `json:"coin"`
+	Denom   string         `json:"denom"`
+	Amount  int64          `json:"amount"`
 	Proof   [][]byte       `json:"proof"`
+}
+
+// Serialize implements merkle tree data Serialize method.
+func (p *Proof) Serialize() ([]byte, error) {
+	if p.Amount == 0 {
+		return nil, ErrInvalidToken
+	}
+
+	var symbol [32]byte
+	copy(symbol[:], p.Denom)
+	return crypto.Keccak256Hash(
+		p.Address.Bytes(),
+		symbol[:],
+		big.NewInt(p.Amount).FillBytes(make([]byte, 32)),
+	).Bytes(), nil
 }

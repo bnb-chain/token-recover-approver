@@ -102,28 +102,18 @@ type SQLStore struct {
 	db *gorm.DB
 }
 
-// GetAccountByAddress implements store.Store.
-func (s *SQLStore) GetAccountByAddress(address types.AccAddress) (*store.Account, error) {
-	var acc *Account
-	result := s.db.Where("address = ?", address.String()).First(acc)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-
-	return &store.Account{
-		Address:       acc.Address,
-		AccountNumber: acc.AccountNumber,
-		Coins:         acc.Coins,
-	}, nil
-}
-
 // GetAccountProof implements store.Store.
-func (s *SQLStore) GetAccountAssetProof(address types.AccAddress, symbol string) (proofs [][]byte, err error) {
+func (s *SQLStore) GetAccountAssetProof(address types.AccAddress, symbol string) (*store.Proof, error) {
 	var proof *Proof
 	result := s.db.Where("address = ? AND denom = ?", address.String(), symbol).First(proof)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	return util.MustDecodeHexArrayToBytes(strings.Split(proof.Proof, ",")), nil
+	return &store.Proof{
+		Address: proof.Address,
+		Denom:   proof.Denom,
+		Amount:  proof.Amount,
+		Proof:   util.MustDecodeHexArrayToBytes(strings.Split(proof.Proof, ",")),
+	}, nil
 }

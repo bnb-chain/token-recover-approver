@@ -19,10 +19,6 @@ import (
 	"github.com/bnb-chain/airdrop-service/pkg/keymanager"
 )
 
-const (
-	RequestTypeClaim = "claim"
-)
-
 type ApprovalService struct {
 	config           *config.Config
 	merkleRoot       []byte
@@ -75,22 +71,18 @@ func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp
 	}
 
 	// Get Merkle Proofs and Node
-	proofs, err := svc.store.GetAccountAssetProof(ownerAddr, req.TokenSymbol)
+	proof, err := svc.store.GetAccountAssetProof(ownerAddr, req.TokenSymbol)
 	if err != nil {
 		return nil, err
 	}
-	account, err := svc.store.GetAccountByAddress(ownerAddr)
-	if err != nil {
-		return nil, err
-	}
-	svc.logger.Debug().Interface("account", account).Msg("GetAccountByAddress")
-	svc.logger.Debug().Interface("proofs", proofs).Msg("GetAccountAssetProofs")
+	svc.logger.Debug().Interface("proof", proof).Msg("GetAccountAssetProofs")
+
 	// Check if token amount is zero
-	if account.Coins.AmountOf(req.TokenSymbol) == 0 {
+	if proof.Amount == 0 {
 		return nil, errors.New("token amount is zero")
 	}
 	// Verify user signature
-	approvalMsg := airdrop.NewAirdropApprovalMsg(req.TokenSymbol, uint64(account.Coins.AmountOf(req.TokenSymbol)), req.ClaimAddress.Hex())
+	approvalMsg := airdrop.NewAirdropApprovalMsg(req.TokenSymbol, uint64(proof.Amount), req.ClaimAddress.Hex())
 	msgBytes, err := svc.getStdMsgBytes(approvalMsg)
 	if err != nil {
 		return nil, err
@@ -101,7 +93,7 @@ func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp
 		return nil, err
 	}
 
-	nodeBytes, err := account.Serialize(req.TokenSymbol)
+	nodeBytes, err := proof.Serialize()
 	if err != nil {
 		return nil, err
 	}
@@ -109,12 +101,12 @@ func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp
 	var tokenSymbolBytes [32]byte
 	copy(tokenSymbolBytes[:], []byte(req.TokenSymbol))
 
-	signData := make([][]byte, 0, len(proofs)+5)
+	signData := make([][]byte, 0, len(proof.Proof)+5)
 	signData = append(signData, [][]byte{
 		[]byte(svc.config.ChainID), req.ClaimAddress[:], ownerSignature, nodeBytes,
 		svc.merkleRoot,
 	}...)
-	signData = append(signData, proofs...)
+	signData = append(signData, proof.Proof...)
 
 	approvalSignature, err := svc.km.Sign(crypto.Keccak256(signData...))
 	if err != nil {
@@ -122,8 +114,8 @@ func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp
 	}
 	svc.logger.Debug().Bytes("approval_signature", approvalSignature).Msg("Signed ApprovalSignature")
 	return &GetClaimApprovalResponse{
-		Amount:            big.NewInt(account.Coins.AmountOf(req.TokenSymbol)),
-		Proofs:            proofs,
+		Amount:            big.NewInt(proof.Amount),
+		Proofs:            proof.Proof,
 		ApprovalSignature: approvalSignature,
 	}, nil
 }
@@ -149,7 +141,7 @@ func (svc *ApprovalService) verifyTmSignature(pubKeyBytes, signatureBytes, msgBy
 	return nil
 }
 
-func (svc ApprovalService) getAddressFromPubKey(pubKeyBytes []byte) (types.AccAddress, error) {
+func (svc *ApprovalService) getAddressFromPubKey(pubKeyBytes []byte) (types.AccAddress, error) {
 	pubKey := secp256k1.PubKeySecp256k1(pubKeyBytes)
 	return types.AccAddress(pubKey.Address()), nil
 }

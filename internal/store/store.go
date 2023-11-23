@@ -5,6 +5,5 @@ import (
 )
 
 type Store interface {
-	GetAccountByAddress(address sdk.AccAddress) (account *Account, err error)
-	GetAccountAssetProof(address sdk.AccAddress, symbol string) (proofs [][]byte, err error)
+	GetAccountAssetProof(address sdk.AccAddress, symbol string) (proofs *Proof, err error)
 }
