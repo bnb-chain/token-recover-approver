@@ -3,6 +3,7 @@ package approval
 import (
 	"errors"
 	"math/big"
+	"strings"
 
 	"github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -82,7 +83,7 @@ func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp
 		return nil, errors.New("token amount is zero")
 	}
 	// Verify user signature
-	approvalMsg := airdrop.NewAirdropApprovalMsg(req.TokenSymbol, uint64(proof.Amount), req.ClaimAddress.Hex())
+	approvalMsg := airdrop.NewAirdropApprovalMsg(req.TokenSymbol, uint64(proof.Amount), strings.ToLower(req.ClaimAddress.Hex()))
 	msgBytes, err := svc.getStdMsgBytes(approvalMsg)
 	if err != nil {
 		return nil, err

@@ -68,14 +68,14 @@ func TestApprovalService_GetClaimApproval(t *testing.T) {
 				req: &GetClaimApprovalRequest{
 					TokenSymbol:    "BNB",
 					OwnerPubKey:    "0x0278caa4d6321aa856d6341dd3e8bcdfe0b55901548871c63c3f5cec43c2ae88a9",
-					OwnerSignature: "0xd61d30f94b1e69a27bb148c8e3d4ae485cfb8df5cbdc223349292e49a55789f63bcb09438f572cbc8aa56a96a892db3f291de7e1e7e182994bd898c155f028d4",
+					OwnerSignature: "0x61f2662fbf581f8cd34ee16e025fab50fbb2d481dbdab4bbe49f6f5ee47fba4c0f54cd0d4994a31573aef15fcaaf3a91eaad95a10183678d563e15128af3e173",
 					ClaimAddress:   common.HexToAddress("0x5B38Da6a701c568545dCfcB03FcB875f56beddC4"),
 				},
 			},
 			wantResp: &GetClaimApprovalResponse{
 				Amount:            big.NewInt(1000000000),
 				Proofs:            util.MustDecodeHexArrayToBytes([]string{"0x679c555951fde6f1e516549283ef67bd4f32c9058f72e41e3cacdfc337410f3e"}),
-				ApprovalSignature: util.MustDecodeHexToBytes("0xe6e271d06d4795fbd6d8c66133adbe0c2341fe50e4c2b0e4ee9a939b3ac4f4cf05832ea789b6eaa52bde40d1e41f8ec7a8981004fde0db6ca37ba26a43a6d80001"),
+				ApprovalSignature: util.MustDecodeHexToBytes("0x207e4b31476bedf9b73ccf01460a138dd12ca1b1ab65f34d7748ba49aa7d3f7c6a19e1d26c04506eba2fb9e29d91845ad4a39f447d6f959ac56628c6370b714200"),
 			},
 			wantErr: false,
 		},
