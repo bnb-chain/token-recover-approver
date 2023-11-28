@@ -3,8 +3,8 @@ package aws
 import (
 	"github.com/ethereum/go-ethereum/common"
 
-	"github.com/bnb-chain/airdrop-service/pkg/crypto/ethsecp256k1"
-	"github.com/bnb-chain/airdrop-service/pkg/keymanager"
+	"github.com/bnb-chain/token-recover-approver/pkg/crypto/ethsecp256k1"
+	"github.com/bnb-chain/token-recover-approver/pkg/keymanager"
 )
 
 var _ keymanager.KeyManager = (*SecretManager)(nil)

@@ -1,7 +1,7 @@
 FROM golang:1.20 as builder
 
-WORKDIR /airdrop-service
-COPY . /airdrop-service
+WORKDIR /app
+COPY . /app
 
 ENV CGO_ENABLED=0
 ENV GO111MODULE=on
@@ -14,7 +14,7 @@ RUN apk add --no-cache ca-certificates
 RUN mkdir -p /app
 WORKDIR /app
 
-COPY --from=builder /airdrop-service/build/bin/airdrop /app/airdrop
+COPY --from=builder /app/build/bin/approver /app/approver
 
 # Create appuser.
 ENV USER=appuser
@@ -31,4 +31,4 @@ RUN chown appuser:appuser /server
 RUN chown appuser:appuser /server/*
 USER appuser:appuser
 
-ENTRYPOINT ["/app/airdrop"]
+ENTRYPOINT ["/app/approver"]

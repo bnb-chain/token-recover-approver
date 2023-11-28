@@ -1,6 +1,6 @@
 package main
 
-import "github.com/bnb-chain/airdrop-service/cmd"
+import "github.com/bnb-chain/token-recover-approver/cmd"
 
 //go:generate wire ./...
 

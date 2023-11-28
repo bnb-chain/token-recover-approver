@@ -1,4 +1,4 @@
-module github.com/bnb-chain/airdrop-service
+module github.com/bnb-chain/token-recover-approver
 
 go 1.20
 
@@ -116,7 +116,7 @@ require (
 replace (
 	github.com/Shopify/sarama v1.26.1 => github.com/Shopify/sarama v1.21.0
 	// TODO: bump to official version
-	github.com/bnb-chain/node => github.com/j75689/node v0.10.1-0.20231116073738-a3e37ebce015
+	github.com/bnb-chain/node => github.com/j75689/node v0.10.1-0.20231128095606-feee0f227d47
 	github.com/cosmos/cosmos-sdk => github.com/j75689/bnc-cosmos-sdk v0.0.0-20231116051639-004e73216f5d //github.com/bnb-chain/bnc-cosmos-sdk v0.26.6
 
 	github.com/grpc-ecosystem/grpc-gateway/v2 => github.com/prysmaticlabs/grpc-gateway/v2 v2.3.1-0.20210702154020-550e1cd83ec1

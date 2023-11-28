@@ -3,8 +3,8 @@ package memory
 import (
 	"github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/bnb-chain/airdrop-service/internal/store"
-	"github.com/bnb-chain/airdrop-service/pkg/util"
+	"github.com/bnb-chain/token-recover-approver/internal/store"
+	"github.com/bnb-chain/token-recover-approver/pkg/util"
 )
 
 var _ store.Store = (*MemoryStore)(nil)

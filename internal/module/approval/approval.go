@@ -12,12 +12,12 @@ import (
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 
 	"github.com/bnb-chain/node/app"
-	"github.com/bnb-chain/node/plugins/airdrop"
+	"github.com/bnb-chain/node/plugins/recover"
 	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 
-	"github.com/bnb-chain/airdrop-service/internal/config"
-	"github.com/bnb-chain/airdrop-service/internal/store"
-	"github.com/bnb-chain/airdrop-service/pkg/keymanager"
+	"github.com/bnb-chain/token-recover-approver/internal/config"
+	"github.com/bnb-chain/token-recover-approver/internal/store"
+	"github.com/bnb-chain/token-recover-approver/pkg/keymanager"
 )
 
 type ApprovalService struct {
@@ -83,8 +83,8 @@ func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp
 		return nil, errors.New("token amount is zero")
 	}
 	// Verify user signature
-	approvalMsg := airdrop.NewAirdropApprovalMsg(req.TokenSymbol, uint64(proof.Amount), strings.ToLower(req.ClaimAddress.Hex()))
-	msgBytes, err := svc.getStdMsgBytes(approvalMsg)
+	tokenRecoverRequestMsg := recover.NewTokenRecoverRequestMsg(req.TokenSymbol, uint64(proof.Amount), strings.ToLower(req.ClaimAddress.Hex()))
+	msgBytes, err := svc.getStdMsgBytes(tokenRecoverRequestMsg)
 	if err != nil {
 		return nil, err
 	}

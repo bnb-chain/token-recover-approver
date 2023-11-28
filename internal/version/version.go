@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	APPName = "airdrop-service"
+	APPName = "token-recover-approver"
 )
 
 // Build Info (set via linker flags)

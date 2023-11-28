@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/bnb-chain/airdrop-service/internal/module/approval"
+	"github.com/bnb-chain/token-recover-approver/internal/module/approval"
 	"github.com/julienschmidt/httprouter"
 )
 

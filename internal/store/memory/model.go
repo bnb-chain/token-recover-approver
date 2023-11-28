@@ -3,7 +3,7 @@ package memory
 import (
 	"encoding/json"
 
-	"github.com/bnb-chain/airdrop-service/pkg/util"
+	"github.com/bnb-chain/token-recover-approver/pkg/util"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

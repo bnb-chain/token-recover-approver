@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/viper"
 	gormLogger "gorm.io/gorm/logger"
 
-	"github.com/bnb-chain/airdrop-service/pkg/logger"
+	"github.com/bnb-chain/token-recover-approver/pkg/logger"
 )
 
 type Config struct {
@@ -110,7 +110,7 @@ func defaultStoreConfig(v *viper.Viper) {
 	v.SetDefault("store.sql_store.sql_driver", "mysql")
 	v.SetDefault("store.sql_store.host", "localhost")
 	v.SetDefault("store.sql_store.port", 3306)
-	v.SetDefault("store.sql_store.dbname", "airdrop")
+	v.SetDefault("store.sql_store.dbname", "approver")
 	v.SetDefault("store.sql_store.user", "root")
 	v.SetDefault("store.sql_store.password", "")
 	v.SetDefault("store.sql_store.connect_timeout", "10s")

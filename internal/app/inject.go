@@ -3,9 +3,9 @@ package app
 import (
 	"fmt"
 
-	"github.com/bnb-chain/airdrop-service/internal/config"
-	"github.com/bnb-chain/airdrop-service/internal/module/http"
-	"github.com/bnb-chain/airdrop-service/internal/version"
+	"github.com/bnb-chain/token-recover-approver/internal/config"
+	"github.com/bnb-chain/token-recover-approver/internal/module/http"
+	"github.com/bnb-chain/token-recover-approver/internal/version"
 
 	"github.com/rs/zerolog"
 )

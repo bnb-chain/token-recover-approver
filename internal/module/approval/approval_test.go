@@ -10,11 +10,11 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rs/zerolog"
 
-	"github.com/bnb-chain/airdrop-service/internal/config"
-	"github.com/bnb-chain/airdrop-service/internal/store"
-	"github.com/bnb-chain/airdrop-service/internal/store/memory"
-	"github.com/bnb-chain/airdrop-service/pkg/keymanager/local"
-	"github.com/bnb-chain/airdrop-service/pkg/util"
+	"github.com/bnb-chain/token-recover-approver/internal/config"
+	"github.com/bnb-chain/token-recover-approver/internal/store"
+	"github.com/bnb-chain/token-recover-approver/internal/store/memory"
+	"github.com/bnb-chain/token-recover-approver/pkg/keymanager/local"
+	"github.com/bnb-chain/token-recover-approver/pkg/util"
 )
 
 const (

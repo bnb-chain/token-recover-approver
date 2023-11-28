@@ -2,7 +2,7 @@
 VERSION=$(shell git describe --tags --always)
 GIT_COMMIT=$(shell git rev-parse HEAD)
 GIT_COMMIT_DATE=$(shell git log -n1 --pretty='format:%cd' --date=format:'%Y%m%d')
-REPO=github.com/bnb-chain/airdrop-service
+REPO=github.com/bnb-chain/token-recover-approver
 
 ldflags = -X $(REPO)/internal/version.AppVersion=$(VERSION) \
           -X $(REPO)/internal/version.GitCommit=$(GIT_COMMIT) \
@@ -18,7 +18,7 @@ run:
 	@go run -ldflags="$(ldflags)" main.go --config configs/default.config.yaml
 
 build: generate
-	go build -ldflags="$(ldflags)" -o ./build/bin/airdrop main.go
+	go build -ldflags="$(ldflags)" -o ./build/bin/approver main.go
 
 build-image:
 	@read -p "Enter Image Name: " IMAGE_NAME; \

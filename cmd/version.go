@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/bnb-chain/airdrop-service/internal/version"
+	"github.com/bnb-chain/token-recover-approver/internal/version"
 )
 
 var (
