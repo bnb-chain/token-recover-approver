@@ -18,6 +18,7 @@ import (
 	"github.com/bnb-chain/token-recover-approver/internal/config"
 	"github.com/bnb-chain/token-recover-approver/internal/store"
 	"github.com/bnb-chain/token-recover-approver/pkg/keymanager"
+	"github.com/bnb-chain/token-recover-approver/pkg/util"
 )
 
 type ApprovalService struct {
@@ -98,6 +99,11 @@ func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp
 	if err != nil {
 		return nil, err
 	}
+	svc.logger.Debug().Str("leaf", hexutil.Encode(nodeBytes)).Msg("LeafNodeBytes")
+
+	if !util.VerifyMerkleProof(svc.merkleRoot, proof.Proof, nodeBytes) {
+		return nil, errors.New("verify merkle proof failed")
+	}
 
 	var tokenSymbolBytes [32]byte
 	copy(tokenSymbolBytes[:], []byte(req.TokenSymbol))
@@ -113,7 +119,7 @@ func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp
 	if err != nil {
 		return nil, err
 	}
-	svc.logger.Debug().Bytes("approval_signature", approvalSignature).Msg("Signed ApprovalSignature")
+	svc.logger.Debug().Str("approval_signature", hexutil.Encode(approvalSignature)).Msg("Signed ApprovalSignature")
 	return &GetClaimApprovalResponse{
 		Amount:            big.NewInt(proof.Amount),
 		Proofs:            proof.Proof,

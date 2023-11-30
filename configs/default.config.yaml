@@ -1,5 +1,5 @@
 chain_id: Binance-Chain-Ganges
-merkle_root: 0x5bd43c1c0929f259349cdf93b3b28673e3c98882ae607098a65798efbebfe39c
+merkle_root: 0xad78b6dbdb34cb9a5c0e44fbfcc3bd52d6e9d519eefbfc39ba5c3b232849a064
 
 logger:
   level: DEBUG

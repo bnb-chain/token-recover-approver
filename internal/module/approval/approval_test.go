@@ -20,7 +20,7 @@ import (
 const (
 	approvalPrivKey  = "afc2986f283cf5f9d17e04c6a12ccf8fa46149fc37d48e11abef15a46ae34eb7"
 	mockDataBasePath = "../../../example/store"
-	mockMerkleRoot   = "0x5bd43c1c0929f259349cdf93b3b28673e3c98882ae607098a65798efbebfe39c"
+	mockMerkleRoot   = "0xad78b6dbdb34cb9a5c0e44fbfcc3bd52d6e9d519eefbfc39ba5c3b232849a064"
 )
 
 func makeMockStore() (store.Store, error) {
@@ -67,15 +67,15 @@ func TestApprovalService_GetClaimApproval(t *testing.T) {
 			args: args{
 				req: &GetClaimApprovalRequest{
 					TokenSymbol:    "BNB",
-					OwnerPubKey:    "0x0278caa4d6321aa856d6341dd3e8bcdfe0b55901548871c63c3f5cec43c2ae88a9",
-					OwnerSignature: "0x61f2662fbf581f8cd34ee16e025fab50fbb2d481dbdab4bbe49f6f5ee47fba4c0f54cd0d4994a31573aef15fcaaf3a91eaad95a10183678d563e15128af3e173",
+					OwnerPubKey:    "0x02dcd743516b78366a217a1bf2aa562ec5accd07163db3332d924fa48e643875a6",
+					OwnerSignature: "0xcd32af98a3cf4b66deaba53dc81c7cf8c810a83eb2fa23bf1a555a718826e2f03d47e3711a10e1ae72031fcd3faabac51325999d74c0cff31d554b4d657dbc64",
 					ClaimAddress:   common.HexToAddress("0x5B38Da6a701c568545dCfcB03FcB875f56beddC4"),
 				},
 			},
 			wantResp: &GetClaimApprovalResponse{
-				Amount:            big.NewInt(1000000000),
-				Proofs:            util.MustDecodeHexArrayToBytes([]string{"0x679c555951fde6f1e516549283ef67bd4f32c9058f72e41e3cacdfc337410f3e"}),
-				ApprovalSignature: util.MustDecodeHexToBytes("0x207e4b31476bedf9b73ccf01460a138dd12ca1b1ab65f34d7748ba49aa7d3f7c6a19e1d26c04506eba2fb9e29d91845ad4a39f447d6f959ac56628c6370b714200"),
+				Amount:            big.NewInt(19999999000000000),
+				Proofs:            util.MustDecodeHexArrayToBytes([]string{"0x3262127e4ff0bce1bb67e569baa034637806b4519b19d3ad9dbae7f5ad31fa18"}),
+				ApprovalSignature: util.MustDecodeHexToBytes("0xe2b44f23b1e8713419a8c1a881c35df72b2f3e55696a8601bb0356529d02a79113590c6d32e8a0b22b609947b1ab84f439037dd99f20bbe738034438ff301f9800"),
 			},
 			wantErr: false,
 		},
