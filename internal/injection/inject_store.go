@@ -18,9 +18,8 @@ import (
 type StoreType string
 
 const (
-	MemoryStore  StoreType = "memory"
-	LevelDBStore StoreType = "leveldb"
-	GORMStore    StoreType = "gorm"
+	MemoryStore StoreType = "memory"
+	GORMStore   StoreType = "gorm"
 )
 
 func initSDK(config *config.Config, logger *zerolog.Logger) {
