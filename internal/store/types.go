@@ -1,7 +1,6 @@
 package store
 
 import (
-	"bytes"
 	"errors"
 	"math/big"
 
@@ -30,17 +29,9 @@ func (p *Proof) Serialize() ([]byte, error) {
 
 	var symbol [32]byte
 	copy(symbol[:], p.Denom)
-	buf := new(bytes.Buffer)
-	if _, err := buf.Write(p.Address.Bytes()); err != nil {
-		return nil, err
-	}
-	if _, err := buf.Write(symbol[:]); err != nil {
-		return nil, err
-	}
-	if _, err := buf.Write(big.NewInt(p.Amount).FillBytes(make([]byte, 32))); err != nil {
-		return nil, err
-	}
 	return crypto.Keccak256Hash(
-		buf.Bytes(),
+		p.Address.Bytes(),
+		symbol[:],
+		big.NewInt(p.Amount).FillBytes(make([]byte, 32)),
 	).Bytes(), nil
 }
