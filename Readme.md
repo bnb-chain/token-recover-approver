@@ -43,6 +43,11 @@ make build-image
 make run
 ```
 
+## How To Get Approval
+```bash
+curl -X 'POST' http://localhost:8080/approve -d '{"token_symbol": "BNB","owner_pub_key": "0x02dcd743516b78366a217a1bf2aa562ec5accd07163db3332d924fa48e643875a6","owner_signature": "0xcd32af98a3cf4b66deaba53dc81c7cf8c810a83eb2fa23bf1a555a718826e2f03d47e3711a10e1ae72031fcd3faabac51325999d74c0cff31d554b4d657dbc64","claim_address": "0x5b38da6a701c568545dcfcb03fcb875f56beddc4"}'
+```
+
 ## Configuration
 
 | Name | Env | Type | Option | Description | Default |
