@@ -16,14 +16,14 @@ const (
 	SignatureLength = 64
 )
 
-type GetClaimApprovalRequest struct {
+type GetTokenRecoverApprovalRequest struct {
 	TokenSymbol    string         `json:"token_symbol" validate:"required"`
 	OwnerPubKey    string         `json:"owner_pub_key" validate:"required"`
 	OwnerSignature string         `json:"owner_signature" validate:"required"`
 	ClaimAddress   common.Address `json:"claim_address" validate:"required"`
 }
 
-func (req *GetClaimApprovalRequest) Validate() error {
+func (req *GetTokenRecoverApprovalRequest) Validate() error {
 	if (req.ClaimAddress == common.Address{}) {
 		return errors.New("claim address is empty")
 	}
@@ -49,19 +49,19 @@ func (req *GetClaimApprovalRequest) Validate() error {
 	return nil
 }
 
-type GetClaimApprovalResponse struct {
+type GetTokenRecoverApprovalResponse struct {
 	Amount            *big.Int `json:"amount"`
 	Proofs            [][]byte `json:"proofs"`
 	ApprovalSignature []byte   `json:"approval_signature"`
 }
 
-func (resp *GetClaimApprovalResponse) MarshalJSON() ([]byte, error) {
-	type aliasGetClaimApprovalResponse struct {
+func (resp *GetTokenRecoverApprovalResponse) MarshalJSON() ([]byte, error) {
+	type aliasGetTokenRecoverApprovalResponse struct {
 		Amount            *big.Int `json:"amount"`
 		Proofs            []string `json:"proofs"`
 		ApprovalSignature string   `json:"approval_signature"`
 	}
-	return json.Marshal(&aliasGetClaimApprovalResponse{
+	return json.Marshal(&aliasGetTokenRecoverApprovalResponse{
 		Amount:            resp.Amount,
 		Proofs:            util.EncodeBytesArrayToHex(resp.Proofs),
 		ApprovalSignature: hexutil.Encode(resp.ApprovalSignature),

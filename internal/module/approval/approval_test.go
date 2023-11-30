@@ -52,27 +52,27 @@ func initSDK() {
 	sdkConfig.SetBech32PrefixForAccount("tbnb", "bnbp")
 }
 
-func TestApprovalService_GetClaimApproval(t *testing.T) {
+func TestApprovalService_GetTokenRecoverApproval(t *testing.T) {
 	type args struct {
-		req *GetClaimApprovalRequest
+		req *GetTokenRecoverApprovalRequest
 	}
 	tests := []struct {
 		name     string
 		args     args
-		wantResp *GetClaimApprovalResponse
+		wantResp *GetTokenRecoverApprovalResponse
 		wantErr  bool
 	}{
 		{
 			name: "test case 1",
 			args: args{
-				req: &GetClaimApprovalRequest{
+				req: &GetTokenRecoverApprovalRequest{
 					TokenSymbol:    "BNB",
 					OwnerPubKey:    "0x02dcd743516b78366a217a1bf2aa562ec5accd07163db3332d924fa48e643875a6",
 					OwnerSignature: "0xcd32af98a3cf4b66deaba53dc81c7cf8c810a83eb2fa23bf1a555a718826e2f03d47e3711a10e1ae72031fcd3faabac51325999d74c0cff31d554b4d657dbc64",
 					ClaimAddress:   common.HexToAddress("0x5B38Da6a701c568545dCfcB03FcB875f56beddC4"),
 				},
 			},
-			wantResp: &GetClaimApprovalResponse{
+			wantResp: &GetTokenRecoverApprovalResponse{
 				Amount:            big.NewInt(19999999000000000),
 				Proofs:            util.MustDecodeHexArrayToBytes([]string{"0x3262127e4ff0bce1bb67e569baa034637806b4519b19d3ad9dbae7f5ad31fa18"}),
 				ApprovalSignature: util.MustDecodeHexToBytes("0xe2b44f23b1e8713419a8c1a881c35df72b2f3e55696a8601bb0356529d02a79113590c6d32e8a0b22b609947b1ab84f439037dd99f20bbe738034438ff301f9800"),
@@ -87,13 +87,13 @@ func TestApprovalService_GetClaimApproval(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotResp, err := svc.GetClaimApproval(tt.args.req)
+			gotResp, err := svc.GetTokenRecoverApproval(tt.args.req)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("ApprovalService.GetClaimApproval() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("ApprovalService.GetTokenRecoverApproval() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(gotResp, tt.wantResp) {
-				t.Errorf("ApprovalService.GetClaimApproval() = %v, want %v", gotResp, tt.wantResp)
+				t.Errorf("ApprovalService.GetTokenRecoverApproval() = %v, want %v", gotResp, tt.wantResp)
 			}
 		})
 	}

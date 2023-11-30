@@ -52,7 +52,7 @@ func (svc *ApprovalService) checkWhiteList(acc types.AccAddress) bool {
 	return ok
 }
 
-func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp *GetClaimApprovalResponse, err error) {
+func (svc *ApprovalService) GetTokenRecoverApproval(req *GetTokenRecoverApprovalRequest) (resp *GetTokenRecoverApprovalResponse, err error) {
 	ownerPubKeyBytes, err := hexutil.Decode(req.OwnerPubKey)
 	if err != nil {
 		return nil, err
@@ -66,7 +66,7 @@ func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp
 		return nil, err
 	}
 
-	svc.logger.Info().Str("address", ownerAddr.String()).Msg("GetClaimApproval")
+	svc.logger.Info().Str("address", ownerAddr.String()).Msg("GetTokenRecoverApproval")
 	// Check While List
 	if !svc.checkWhiteList(ownerAddr) {
 		return nil, errors.New("address is not in while list")
@@ -120,7 +120,7 @@ func (svc *ApprovalService) GetClaimApproval(req *GetClaimApprovalRequest) (resp
 		return nil, err
 	}
 	svc.logger.Debug().Str("approval_signature", hexutil.Encode(approvalSignature)).Msg("Signed ApprovalSignature")
-	return &GetClaimApprovalResponse{
+	return &GetTokenRecoverApprovalResponse{
 		Amount:            big.NewInt(proof.Amount),
 		Proofs:            proof.Proof,
 		ApprovalSignature: approvalSignature,

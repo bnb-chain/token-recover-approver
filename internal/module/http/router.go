@@ -14,20 +14,20 @@ func (server *HttpServer) Ping(w http.ResponseWriter, r *http.Request, _ httprou
 	server.Response(w, Success, "pong", nil)
 }
 
-func (server *HttpServer) GetClaimApproval(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (server *HttpServer) GetTokenRecoverApproval(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		server.Response(w, InvalidRequest, nil, err)
 		return
 	}
 	defer r.Body.Close()
-	req := &approval.GetClaimApprovalRequest{}
+	req := &approval.GetTokenRecoverApprovalRequest{}
 	err = json.Unmarshal(body, req)
 	if err != nil {
 		server.Response(w, InvalidRequest, nil, err)
 		return
 	}
-	server.logger.Info().Interface("request", req).Msg("GetClaimApproval")
+	server.logger.Info().Interface("request", req).Msg("GetTokenRecoverApproval")
 
 	err = req.Validate()
 	if err != nil {
@@ -35,7 +35,7 @@ func (server *HttpServer) GetClaimApproval(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	resp, err := server.approvalService.GetClaimApproval(req)
+	resp, err := server.approvalService.GetTokenRecoverApproval(req)
 	if err != nil {
 		server.Response(w, InvalidRequest, nil, err)
 		return
