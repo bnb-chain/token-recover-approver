@@ -1,16 +1,18 @@
-FROM golang:1.20 as builder
+FROM golang:1.20-alpine as builder
 
 WORKDIR /app
 COPY . /app
 
-ENV CGO_ENABLED=0
+RUN apk add --no-cache make git bash build-base linux-headers libc-dev
 ENV GO111MODULE=on
+ENV CGO_ENABLED=1
+ENV CGO_CFLAGS="-D_LARGEFILE64_SOURCE"
 RUN make tools
 RUN make build
 
 FROM alpine:3
 
-RUN apk add --no-cache ca-certificates
+RUN apk add --no-cache ca-certificates libstdc++
 RUN mkdir -p /app
 WORKDIR /app
 
@@ -27,8 +29,8 @@ RUN adduser \
 --uid "${UID}" \
 "${USER}"
 
-RUN chown appuser:appuser /server
-RUN chown appuser:appuser /server/*
+RUN chown appuser:appuser /app
+RUN chown appuser:appuser /app/*
 USER appuser:appuser
 
 ENTRYPOINT ["/app/approver"]
