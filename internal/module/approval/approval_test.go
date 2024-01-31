@@ -8,9 +8,11 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/rs/zerolog"
 
 	"github.com/bnb-chain/token-recover-approver/internal/config"
+	collector "github.com/bnb-chain/token-recover-approver/internal/metrics/prometheus"
 	"github.com/bnb-chain/token-recover-approver/internal/store"
 	"github.com/bnb-chain/token-recover-approver/internal/store/memory"
 	"github.com/bnb-chain/token-recover-approver/pkg/keymanager/local"
@@ -43,7 +45,7 @@ func makeMockSvc() (*ApprovalService, error) {
 	return NewApprovalService(&config.Config{
 		ChainID:    "Binance-Chain-Ganges",
 		MerkleRoot: mockMerkleRoot,
-	}, km, mockStore, &zerolog.Logger{})
+	}, km, mockStore, collector.NewCollector(prometheus.NewRegistry()), &zerolog.Logger{})
 }
 
 func initSDK() {

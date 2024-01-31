@@ -32,11 +32,13 @@ func Initialize(configPath string) (Application, error) {
 	if err != nil {
 		return Application{}, err
 	}
-	approvalService, err := approval.NewApprovalService(configConfig, keyManager, store, logger)
+	registry := injection.InitPrometheusRegister()
+	metrics := injection.InitMetrics(registry)
+	approvalService, err := approval.NewApprovalService(configConfig, keyManager, store, metrics, logger)
 	if err != nil {
 		return Application{}, err
 	}
-	httpServer := http.NewHttpServer(approvalService, logger)
+	httpServer := http.NewHttpServer(approvalService, registry, logger)
 	application := newApplication(logger, configConfig, httpServer)
 	return application, nil
 }

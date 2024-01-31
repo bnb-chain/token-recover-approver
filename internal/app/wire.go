@@ -21,6 +21,8 @@ func Initialize(configPath string) (Application, error) {
 		injection.InitLogger,
 		injection.InitKeyManager,
 		injection.InitStore,
+		injection.InitMetrics,
+		injection.InitPrometheusRegister,
 		approval.NewApprovalService,
 		http.NewHttpServer,
 	)

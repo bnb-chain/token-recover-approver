@@ -12,6 +12,13 @@ http:
   addr: 0.0.0.0
   port: 8080
 
+metrics:
+  enable: false
+  pprof: false
+  path: /metrics
+  addr: 0.0.0.0
+  port: 6060
+
 secret:
   type: local
   local_secret:

@@ -12,13 +12,14 @@ import (
 )
 
 type Config struct {
-	ChainID          string       `mapstructure:"chain_id"`
-	MerkleRoot       string       `mapstructure:"merkle_root"`
-	Logger           LoggerConfig `mapstructure:"logger"`
-	HTTP             HTTPConfig   `mapstructure:"http"`
-	Secret           SecretConfig `mapstructure:"secret"`
-	Store            StoreConfig  `mapstructure:"store"`
-	AccountWhiteList []string     `mapstructure:"account_white_list"`
+	ChainID          string        `mapstructure:"chain_id"`
+	MerkleRoot       string        `mapstructure:"merkle_root"`
+	Logger           LoggerConfig  `mapstructure:"logger"`
+	HTTP             HTTPConfig    `mapstructure:"http"`
+	Metrics          MetricsConfig `mapstructure:"metrics"`
+	Secret           SecretConfig  `mapstructure:"secret"`
+	Store            StoreConfig   `mapstructure:"store"`
+	AccountWhiteList []string      `mapstructure:"account_white_list"`
 }
 
 func defaultConfig(v *viper.Viper) {
@@ -45,6 +46,22 @@ type HTTPConfig struct {
 func defaultHTTPConfig(v *viper.Viper) {
 	v.SetDefault("http.addr", "0.0.0.0")
 	v.SetDefault("http.port", 8080)
+}
+
+type MetricsConfig struct {
+	Enable bool   `mapstructure:"enable"`
+	PProf  bool   `mapstructure:"pprof"`
+	Path   string `mapstructure:"path"`
+	Addr   string `mapstructure:"addr"`
+	Port   uint16 `mapstructure:"port"`
+}
+
+func defaultMetricsConfig(v *viper.Viper) {
+	v.SetDefault("metrics.enable", true)
+	v.SetDefault("metrics.pprof", false)
+	v.SetDefault("metrics.path", "/metrics")
+	v.SetDefault("metrics.addr", "0.0.0.0")
+	v.SetDefault("metrics.port", 6060)
 }
 
 type SecretConfig struct {
@@ -140,6 +157,7 @@ func NewConfig(configPath string) (*Config, error) {
 	defaultConfig(v)
 	defaultLoggerConfig(v)
 	defaultHTTPConfig(v)
+	defaultMetricsConfig(v)
 	defaultSecretConfig(v)
 	defaultStoreConfig(v)
 
