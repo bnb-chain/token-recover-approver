@@ -9,33 +9,11 @@ import (
 
 var _ store.Store = (*MemoryStore)(nil)
 
-func NewMemoryStore(accountsPath, proofsPath string) (*MemoryStore, error) {
+func NewMemoryStore(proofsPath string) (*MemoryStore, error) {
 	errChan := make(chan error, 1)
 	defer close(errChan)
-	// load accounts
-	stream := util.NewJSONStream(func() any {
-		return &Account{}
-	})
-
-	accounts := make(map[string]*Account)
-	go func() {
-		for data := range stream.Watch() {
-			if data.Error != nil {
-				errChan <- data.Error
-				return
-			}
-			acc := data.Data.(*Account)
-			accounts[acc.Address.String()] = acc
-		}
-		errChan <- nil
-	}()
-	stream.Start(accountsPath)
-	err := <-errChan
-	if err != nil {
-		return nil, err
-	}
 	// load proofs
-	stream = util.NewJSONStream(func() any {
+	stream := util.NewJSONStream(func() any {
 		return &Proof{}
 	})
 
@@ -53,29 +31,23 @@ func NewMemoryStore(accountsPath, proofsPath string) (*MemoryStore, error) {
 		errChan <- nil
 	}()
 	stream.Start(proofsPath)
-	err = <-errChan
+	err := <-errChan
 	if err != nil {
 		return nil, err
 	}
 
 	return &MemoryStore{
-		accounts: accounts,
-		proofs:   proofs,
+		proofs: proofs,
 	}, nil
 }
 
 // MemoryStore implements store.Store.
 type MemoryStore struct {
-	accounts map[string]*Account
-	proofs   map[string]*Proof // address:index:symbol -> proofs
+	proofs map[string]*Proof // address:index:symbol -> proofs
 }
 
 // GetAccountProofs implements store.Store.
 func (ss *MemoryStore) GetAccountAssetProof(address types.AccAddress, symbol string) (*store.Proof, error) {
-	acc, exist := ss.accounts[address.String()]
-	if !exist {
-		return nil, ErrAccountNotFound
-	}
 
 	index := address.String() + ":" + symbol
 	proofs, exist := ss.proofs[index]
@@ -83,9 +55,9 @@ func (ss *MemoryStore) GetAccountAssetProof(address types.AccAddress, symbol str
 		return nil, ErrProofNotFound
 	}
 	return &store.Proof{
-		Address: acc.Address,
+		Address: proofs.Address,
 		Denom:   proofs.Coin.Denom,
-		Amount:  acc.Coins.AmountOf(proofs.Coin.Denom),
+		Amount:  proofs.Coin.Amount,
 		Proof:   proofs.Proof,
 	}, nil
 }

@@ -26,7 +26,6 @@ const (
 func makeMockStore() (store.Store, error) {
 	initSDK()
 	return memory.NewMemoryStore(
-		path.Join(mockDataBasePath, "accounts.json"),
 		path.Join(mockDataBasePath, "merkle_proofs.json"),
 	)
 }

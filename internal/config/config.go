@@ -76,7 +76,6 @@ type StoreConfig struct {
 }
 
 type MemoryStoreConfig struct {
-	Accounts     string `mapstructure:"accounts"`
 	MerkleProofs string `mapstructure:"merkle_proofs"`
 }
 

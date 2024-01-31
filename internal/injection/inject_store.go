@@ -37,7 +37,6 @@ func InitStore(config *config.Config, logger *zerolog.Logger) (store.Store, erro
 	switch StoreType(config.Store.Driver) {
 	case MemoryStore:
 		return memory.NewMemoryStore(
-			config.Store.MemoryStore.Accounts,
 			config.Store.MemoryStore.MerkleProofs,
 		)
 	case GORMStore:
