@@ -13,7 +13,7 @@ http:
   port: 8080
 
 metrics:
-  enable: false
+  enable: true
   pprof: false
   path: /metrics
   addr: 0.0.0.0
@@ -27,5 +27,4 @@ secret:
 store:
   driver: memory
   memory_store:
-    accounts: ./example/store/accounts.json
     merkle_proofs: ./example/store/merkle_proofs.json

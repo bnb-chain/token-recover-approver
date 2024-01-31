@@ -62,28 +62,33 @@ curl -X 'POST' http://localhost:8080/approve -d '{"token_symbol": "BNB","owner_p
 | http.addr | HTTP_ADDR | string | | HTTP address | `"0.0.0.0"` |
 | http.port | HTTP_PORT | uint16 | | HTTP port | `8080` |
 |---|---|---|---|---|---|
+| metrics.enable | METRICS_ENABLE | bool | | Whether to enable metrics router | `true` |
+| metrics.pprof | METRICS_PPROF | bool | | Whether to enable pprof router | `false` |
+| metrics.path | METRICS_PATH | string | | Metrics router path | `/metrics` |
+| metrics.addr | METRICS_ADDR | string | | Metrics address | `"0.0.0.0"` |
+| metrics.port | METRICS_PORT | uint16 | | Metrics port | `6060` |
+|---|---|---|---|---|---|
 | secret.type | SECRET_TYPE | string | | Secret type | `"local"` |
-| secret.local_secret.private_key | SECRET_LOCAL_PRIVATE_KEY | string | | Local secret private key | `""` |
-| secret.aws_secret_manager.region | SECRET_AWS_REGION | string | | AWS Secret Manager region | `""` |
-| secret.aws_secret_manager.secret_name | SECRET_AWS_SECRET_NAME | string | | AWS Secret Manager secret name | `""` |
+| secret.local_secret.private_key | SECRET_LOCAL_SECRET_PRIVATE_KEY | string | | Local secret private key | `""` |
+| secret.aws_secret_manager.region | SECRET_AWS_SECRET_MANAGER_REGION | string | | AWS Secret Manager region | `""` |
+| secret.aws_secret_manager.secret_name | SECRET_AWS_SECRET_MANAGER_SECRET_NAME | string | | AWS Secret Manager secret name | `""` |
 |---|---|---|---|---|---|
 | store.driver | STORE_DRIVER | string | | Store driver | `"memory"` |
 |---|---|---|---|---|---|
-| store.memory_store.accounts | STORE_MEMORY_ACCOUNTS | string | | Memory store accounts file | `"./example/accounts.json"` |
-| store.memory_store.merkle_proofs | STORE_MEMORY_MERKLE_PROOFS | string | | Memory store Merkle proofs file | `"./example/merkle_proofs.json"` |
+| store.memory_store.merkle_proofs | STORE_MEMORY_STORE_MERKLE_PROOFS | string | | Memory store Merkle proofs file | `"./example/merkle_proofs.json"` |
 |---|---|---|---|---|---|
-| store.sql_store.sql_driver | STORE_SQL_DRIVER | string | `mysql`, `postgres`, `sqlite` | SQL store driver | `"mysql"` |
-| store.sql_store.host | STORE_SQL_HOST | string | | SQL store host | `"localhost"` |
-| store.sql_store.port | STORE_SQL_PORT | uint | | SQL store port | `3306` |
-| store.sql_store.dbname | STORE_SQL_DBNAME | string | | SQL store database name | `"approver"` |
-| store.sql_store.user | STORE_SQL_USER | string | | SQL store user | `"root"` |
-| store.sql_store.password | STORE_SQL_PASSWORD | string | | SQL store password | `""` |
-| store.sql_store.connect_timeout | STORE_SQL_CONNECT_TIMEOUT | string | | SQL store connect timeout | `"10s"` |
-| store.sql_store.read_timeout | STORE_SQL_READ_TIMEOUT | string | | SQL store read timeout | `"30s"` |
-| store.sql_store.write_timeout | STORE_SQL_WRITE_TIMEOUT | string | | SQL store write timeout | `"30s"` |
-| store.sql_store.dial_timeout | STORE_SQL_DIAL_TIMEOUT | time.Duration | | SQL store dial timeout | `"10s"` |
-| store.sql_store.max_idletime | STORE_SQL_MAX_IDLETIME | time.Duration | | SQL store max idle time | `"1h"` |
-| store.sql_store.max_lifetime | STORE_SQL_MAX_LIFETIME | time.Duration | | SQL store max lifetime | `"1h"` |
-| store.sql_store.max_idle_conn | STORE_SQL_MAX_IDLE_CONN | int | | SQL store max idle connections | `2` |
-| store.sql_store.max_open_conn | STORE_SQL_MAX_OPEN_CONN | int | | SQL store max open connections | `5` |
-| store.sql_store.ssl_mode | STORE_SQL_SSL_MODE | bool | | SQL store SSL mode | `false` |
+| store.sql_store.sql_driver | STORE_SQL_STORE_SQL_DRIVER | string | `mysql`, `postgres`, `sqlite` | SQL store driver | `"mysql"` |
+| store.sql_store.host | STORE_SQL_STORE_HOST | string | | SQL store host | `"localhost"` |
+| store.sql_store.port | STORE_SQL_STORE_PORT | uint | | SQL store port | `3306` |
+| store.sql_store.dbname | STORE_SQL_STORE_DBNAME | string | | SQL store database name | `"approver"` |
+| store.sql_store.user | STORE_SQL_STORE_USER | string | | SQL store user | `"root"` |
+| store.sql_store.password | STORE_SQL_STORE_PASSWORD | string | | SQL store password | `""` |
+| store.sql_store.connect_timeout | STORE_SQL_STORE_CONNECT_TIMEOUT | string | | SQL store connect timeout | `"10s"` |
+| store.sql_store.read_timeout | STORE_SQL_STORE_READ_TIMEOUT | string | | SQL store read timeout | `"30s"` |
+| store.sql_store.write_timeout | STORE_SQL_STORE_WRITE_TIMEOUT | string | | SQL store write timeout | `"30s"` |
+| store.sql_store.dial_timeout | STORE_SQL_STORE_DIAL_TIMEOUT | time.Duration | | SQL store dial timeout | `"10s"` |
+| store.sql_store.max_idletime | STORE_SQL_STORE_MAX_IDLETIME | time.Duration | | SQL store max idle time | `"1h"` |
+| store.sql_store.max_lifetime | STORE_SQL_STORE_MAX_LIFETIME | time.Duration | | SQL store max lifetime | `"1h"` |
+| store.sql_store.max_idle_conn | STORE_SQL_STORE_MAX_IDLE_CONN | int | | SQL store max idle connections | `2` |
+| store.sql_store.max_open_conn | STORE_SQL_STORE_MAX_OPEN_CONN | int | | SQL store max open connections | `5` |
+| store.sql_store.ssl_mode | STORE_SQL_STORE_SSL_MODE | bool | | SQL store SSL mode | `false` |
