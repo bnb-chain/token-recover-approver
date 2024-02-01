@@ -40,6 +40,7 @@ var (
 
 func init() {
 	rootCmd.AddCommand(versionCmd)
+	rootCmd.AddCommand(toolCmd)
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file")
 	rootCmd.PersistentFlags().UintVar(&timeout, "timeout", 300, "graceful shutdown timeout (second)")
 }

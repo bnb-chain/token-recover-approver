@@ -1,0 +1,36 @@
+chain_id: Binance-Chain-Ganges
+merkle_root: 0xad78b6dbdb34cb9a5c0e44fbfcc3bd52d6e9d519eefbfc39ba5c3b232849a064
+
+# account_white_list:
+#   - tbnb1wf7d5t6afrm05zmq9hw66uguae85cpsjcpddtw
+
+logger:
+  level: DEBUG
+  format: console # json, console
+
+http:
+  addr: 0.0.0.0
+  port: 8080
+
+metrics:
+  enable: true
+  pprof: false
+  path: /metrics
+  addr: 0.0.0.0
+  port: 6060
+
+secret:
+  type: local
+  local_secret:
+    private_key: "afc2986f283cf5f9d17e04c6a12ccf8fa46149fc37d48e11abef15a46ae34eb7"
+
+store:
+  driver: gorm
+  sql_store:
+    sql_driver: mysql
+    dbname: approver
+    host: localhost
+    port: 3306
+    user: root
+    password: qwer1234
+    

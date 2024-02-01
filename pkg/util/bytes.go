@@ -10,6 +10,10 @@ func EncodeBytesArrayToHex(data [][]byte) []string {
 	return hex
 }
 
+func EncodeBytesToHex(data []byte) string {
+	return hexutil.Encode(data)
+}
+
 func MustDecodeHexToBytes(hex string) []byte {
 	data, _ := hexutil.Decode(hex)
 	return data

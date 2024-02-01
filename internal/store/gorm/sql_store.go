@@ -104,16 +104,42 @@ type SQLStore struct {
 
 // GetAccountProof implements store.Store.
 func (s *SQLStore) GetAccountAssetProof(address types.AccAddress, symbol string) (*store.Proof, error) {
-	var proof *Proof
-	result := s.db.Where("address = ? AND denom = ?", address.String(), symbol).First(proof)
+	var proof Proof
+	result := s.db.Where("address = ? AND denom = ?", util.EncodeBytesToHex(address), symbol).First(&proof)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
 	return &store.Proof{
-		Address: proof.Address,
+		Address: types.AccAddress(util.MustDecodeHexToBytes(proof.Address)),
 		Denom:   proof.Denom,
 		Amount:  proof.Amount,
 		Proof:   util.MustDecodeHexArrayToBytes(strings.Split(proof.Proof, ",")),
 	}, nil
+}
+
+// InsertAccountProof implements a function to insert account proof.
+func (s *SQLStore) InsertAccountAssetProof(proof *store.Proof) error {
+	dbProof := &Proof{
+		Address: util.EncodeBytesToHex(proof.Address[:]),
+		Denom:   proof.Denom,
+		Amount:  proof.Amount,
+		Proof:   strings.Join(util.EncodeBytesArrayToHex(proof.Proof), ","),
+	}
+
+	result := s.db.Create(dbProof)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
+// Close implements store.Store.
+func (s *SQLStore) Close() error {
+	db, err := s.db.DB()
+	if err != nil {
+		return err
+	}
+	return db.Close()
 }

@@ -17,6 +17,15 @@ generate:
 run:
 	@go run -ldflags="$(ldflags)" main.go --config configs/default.config.yaml
 
+run-sqlite:
+	@go run -ldflags="$(ldflags)" main.go --config configs/sqlite.config.yaml
+
+run-mysql:
+	@go run -ldflags="$(ldflags)" main.go --config configs/mysql.config.yaml
+
+run-pgsql:
+	@go run -ldflags="$(ldflags)" main.go --config configs/pgsql.config.yaml
+
 build: generate
 	go build -ldflags="$(ldflags)" -o ./build/bin/approver main.go
 

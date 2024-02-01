@@ -61,3 +61,8 @@ func (ss *MemoryStore) GetAccountAssetProof(address types.AccAddress, symbol str
 		Proof:   proofs.Proof,
 	}, nil
 }
+
+// Close implements store.Store.
+func (ss *MemoryStore) Close() error {
+	return nil
+}

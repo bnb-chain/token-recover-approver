@@ -1,0 +1,10 @@
+version: '3'
+services:
+  mysql:
+    restart: always
+    image: mysql:8
+    environment:
+      - "MYSQL_ROOT_PASSWORD=qwer1234"
+      - "MYSQL_DATABASE=approver"
+    ports:
+      - 3306:3306

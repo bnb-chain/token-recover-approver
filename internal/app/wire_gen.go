@@ -39,6 +39,6 @@ func Initialize(configPath string) (Application, error) {
 		return Application{}, err
 	}
 	httpServer := http.NewHttpServer(approvalService, registry, logger)
-	application := newApplication(logger, configConfig, httpServer)
+	application := newApplication(logger, configConfig, httpServer, store)
 	return application, nil
 }
