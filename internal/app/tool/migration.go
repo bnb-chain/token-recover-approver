@@ -43,7 +43,11 @@ func (tool *Tool) MigrateDataFromLocalToSQL(
 				Proof:   proof.Proof,
 			}
 
-			sqlStore.InsertAccountAssetProof(dbProof)
+			err := sqlStore.InsertAccountAssetProof(dbProof)
+			if err != nil {
+				errChan <- err
+				return
+			}
 		}
 		errChan <- nil
 	}()

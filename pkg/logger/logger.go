@@ -22,7 +22,6 @@ const (
 
 // NewLogger returns a zerolog.Logger
 func NewLogger(logLevel string, logFormat LogFormat, opts ...Option) (*zerolog.Logger, error) {
-	level := zerolog.InfoLevel
 	level, err := zerolog.ParseLevel(strings.ToLower(logLevel))
 	if err != nil {
 		return &zerolog.Logger{}, err

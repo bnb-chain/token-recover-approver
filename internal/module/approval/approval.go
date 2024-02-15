@@ -125,9 +125,6 @@ func (svc *ApprovalService) GetTokenRecoverApproval(req *GetTokenRecoverApproval
 	svc.metrics.ObserveMerkleProofVerificationDuration(float64(time.Since(merkleProofVerificationStartTime).Seconds()))
 
 	// Sign ApprovalSignature
-	var tokenSymbolBytes [32]byte
-	copy(tokenSymbolBytes[:], []byte(req.TokenSymbol))
-
 	signData := make([][]byte, 0, len(proof.Proof)+5)
 	signData = append(signData, [][]byte{
 		[]byte(svc.config.ChainID), req.ClaimAddress[:], ownerSignature, nodeBytes,

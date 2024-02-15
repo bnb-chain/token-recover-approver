@@ -1,6 +1,7 @@
 package config
 
 import (
+	"net/http"
 	"os"
 	"strings"
 	"time"
@@ -39,21 +40,36 @@ func defaultLoggerConfig(v *viper.Viper) {
 }
 
 type HTTPConfig struct {
-	Addr string `mapstructure:"addr"`
-	Port uint16 `mapstructure:"port"`
+	Addr              string        `mapstructure:"addr"`
+	Port              uint16        `mapstructure:"port"`
+	ReadTimeout       time.Duration `mapstructure:"read_timeout"`
+	ReadHeaderTimeout time.Duration `mapstructure:"read_header_timeout"`
+	WriteTimeout      time.Duration `mapstructure:"write_timeout"`
+	IdleTimeout       time.Duration `mapstructure:"idle_timeout"`
+	MaxHeaderBytes    int           `mapstructure:"max_header_bytes"`
 }
 
 func defaultHTTPConfig(v *viper.Viper) {
 	v.SetDefault("http.addr", "0.0.0.0")
 	v.SetDefault("http.port", 8080)
+	v.SetDefault("http.read_timeout", 5*time.Second)
+	v.SetDefault("http.read_header_timeout", 5*time.Second)
+	v.SetDefault("http.write_timeout", 10*time.Second)
+	v.SetDefault("http.idle_timeout", 5*time.Second)
+	v.SetDefault("http.max_header_bytes", http.DefaultMaxHeaderBytes)
 }
 
 type MetricsConfig struct {
-	Enable bool   `mapstructure:"enable"`
-	PProf  bool   `mapstructure:"pprof"`
-	Path   string `mapstructure:"path"`
-	Addr   string `mapstructure:"addr"`
-	Port   uint16 `mapstructure:"port"`
+	Enable            bool          `mapstructure:"enable"`
+	PProf             bool          `mapstructure:"pprof"`
+	Path              string        `mapstructure:"path"`
+	Addr              string        `mapstructure:"addr"`
+	Port              uint16        `mapstructure:"port"`
+	ReadTimeout       time.Duration `mapstructure:"read_timeout"`
+	ReadHeaderTimeout time.Duration `mapstructure:"read_header_timeout"`
+	WriteTimeout      time.Duration `mapstructure:"write_timeout"`
+	IdleTimeout       time.Duration `mapstructure:"idle_timeout"`
+	MaxHeaderBytes    int           `mapstructure:"max_header_bytes"`
 }
 
 func defaultMetricsConfig(v *viper.Viper) {
@@ -62,6 +78,11 @@ func defaultMetricsConfig(v *viper.Viper) {
 	v.SetDefault("metrics.path", "/metrics")
 	v.SetDefault("metrics.addr", "0.0.0.0")
 	v.SetDefault("metrics.port", 6060)
+	v.SetDefault("metrics.read_timeout", 5*time.Second)
+	v.SetDefault("metrics.read_header_timeout", 5*time.Second)
+	v.SetDefault("metrics.write_timeout", 10*time.Second)
+	v.SetDefault("metrics.idle_timeout", 5*time.Second)
+	v.SetDefault("metrics.max_header_bytes", http.DefaultMaxHeaderBytes)
 }
 
 type SecretConfig struct {
@@ -162,7 +183,12 @@ func NewConfig(configPath string) (*Config, error) {
 	defaultStoreConfig(v)
 
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-	v.ReadConfig(file)
+	// read config file
+	// if config file is not provided, it will use default values
+	// if config file is provided, it will override default values
+	// note: environment variables will override config file
+	// note: environment variables should be in uppercase
+	_ = v.ReadConfig(file) // no error handling because the application will panic if the config file is not provided
 
 	var config Config
 	if err := v.Unmarshal(&config); err != nil {

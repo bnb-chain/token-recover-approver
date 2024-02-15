@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/pprof"
 
@@ -11,6 +12,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/zerolog"
 
+	"github.com/bnb-chain/token-recover-approver/internal/config"
 	"github.com/bnb-chain/token-recover-approver/internal/module/approval"
 )
 
@@ -32,23 +34,33 @@ func NewHttpServer(approvalService *approval.ApprovalService, registry *promethe
 	}
 }
 
-func (server *HttpServer) Run(addr string) error {
+func (server *HttpServer) Run(config config.HTTPConfig) error {
 	router := httprouter.New()
 	server.httpServer = &http.Server{
-		Addr:    addr,
-		Handler: router,
+		Addr:              fmt.Sprintf("%s:%d", config.Addr, config.Port),
+		Handler:           router,
+		ReadTimeout:       config.ReadTimeout,
+		ReadHeaderTimeout: config.ReadHeaderTimeout,
+		WriteTimeout:      config.WriteTimeout,
+		IdleTimeout:       config.IdleTimeout,
+		MaxHeaderBytes:    config.MaxHeaderBytes,
 	}
 	server.setRouter(router)
 	return server.httpServer.ListenAndServe()
 }
 
-func (server *HttpServer) RunMetrics(addr string, metricsPath string, enablePProf bool) error {
+func (server *HttpServer) RunMetrics(config config.MetricsConfig) error {
 	router := httprouter.New()
 	server.metricsServer = &http.Server{
-		Addr:    addr,
-		Handler: router,
+		Addr:              fmt.Sprintf("%s:%d", config.Addr, config.Port),
+		Handler:           router,
+		ReadTimeout:       config.ReadTimeout,
+		ReadHeaderTimeout: config.ReadHeaderTimeout,
+		WriteTimeout:      config.WriteTimeout,
+		IdleTimeout:       config.IdleTimeout,
+		MaxHeaderBytes:    config.MaxHeaderBytes,
 	}
-	server.setMetrics(router, metricsPath, enablePProf)
+	server.setMetrics(router, config.Path, config.PProf)
 	return server.metricsServer.ListenAndServe()
 }
 

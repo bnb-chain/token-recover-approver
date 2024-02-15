@@ -1,8 +1,6 @@
 package app
 
 import (
-	"fmt"
-
 	"golang.org/x/sync/errgroup"
 
 	"github.com/bnb-chain/token-recover-approver/internal/config"
@@ -25,14 +23,14 @@ func (application Application) Start() error {
 	eg := errgroup.Group{}
 	eg.Go(func() error {
 		application.logger.Info().Msgf("http server listen %s:%d", application.config.HTTP.Addr, application.config.HTTP.Port)
-		return application.httpServer.Run(fmt.Sprintf("%s:%d", application.config.HTTP.Addr, application.config.HTTP.Port))
+		return application.httpServer.Run(application.config.HTTP)
 	})
 	eg.Go(func() error {
 		if !application.config.Metrics.Enable {
 			return nil
 		}
-		application.logger.Info().Msgf("metrics server listen %s:%d", application.config.HTTP.Addr, application.config.HTTP.Port)
-		return application.httpServer.RunMetrics(fmt.Sprintf("%s:%d", application.config.Metrics.Addr, application.config.Metrics.Port), application.config.Metrics.Path, application.config.Metrics.PProf)
+		application.logger.Info().Msgf("metrics server listen %s:%d", application.config.Metrics.Addr, application.config.Metrics.Port)
+		return application.httpServer.RunMetrics(application.config.Metrics)
 	})
 
 	return eg.Wait()
