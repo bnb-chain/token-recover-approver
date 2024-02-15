@@ -26,7 +26,7 @@ run-mysql:
 run-pgsql:
 	@go run -ldflags="$(ldflags)" main.go --config configs/pgsql.config.yaml
 
-build: generate
+build:
 	go build -ldflags="$(ldflags)" -o ./build/bin/approver main.go
 
 build-image:

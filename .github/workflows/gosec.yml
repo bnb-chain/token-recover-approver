@@ -1,17 +1,15 @@
-name: Lint
+name: gosec
+
 on:
   push:
     branches:
       - master
       - develop
-  pull_request:
-permissions:
-  contents: read
-  # Optional: allow read access to pull request. Use with `only-new-issues` option.
-  # pull-requests: read
+  pull_request: {}
+
 jobs:
-  golangci:
-    name: golangci-lint
+  gosec:
+    name: gosec
     strategy:
       matrix:
         go-version: [1.20.x]
@@ -19,15 +17,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       GOPRIVATE: github.com/bnb-chain
+      GH_ACCESS_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
       - uses: actions/setup-go@v3
         with:
           go-version: ${{ matrix.go-version }}
       - uses: actions/checkout@v3
-
-      - run: go env -w GOPRIVATE="github.com/bnb-chain/*"
-      - run: git config --global url."https://${{ secrets.GH_TOKEN }}@github.com".insteadOf "https://github.com"
-
+      - name: Setup GitHub Token
+        run: git config --global url.https://$GH_ACCESS_TOKEN@github.com/.insteadOf https://github.com/
       - uses: actions/cache@v3
         with:
           # In order:
@@ -46,10 +43,7 @@ jobs:
       - run: |
           go mod tidy
           go mod download
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3
+      - name: Run Gosec Security Scanner
+        uses: securego/gosec@master
         with:
-          # Optional: version of golangci-lint to use in form of v1.2 or v1.2.3 or `latest` to use the latest version
-          version: latest
-          skip-pkg-cache: true
-          args: --timeout=99m
+          args: -quiet -confidence high -severity high ./...

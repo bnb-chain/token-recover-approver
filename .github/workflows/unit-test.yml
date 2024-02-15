@@ -5,10 +5,7 @@ on:
     branches:
       - master
       - develop
-  pull_request:
-    branches:
-      - master
-      - develop
+  pull_request: {}
 
 jobs:
   # Push image to GitHub Packages.
