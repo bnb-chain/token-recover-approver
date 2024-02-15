@@ -72,12 +72,22 @@ curl -X 'POST' http://localhost:8080/approve -d '{"token_symbol": "BNB","owner_p
 |---|---|---|---|---|---|
 | http.addr | HTTP_ADDR | string | | HTTP address | `"0.0.0.0"` |
 | http.port | HTTP_PORT | uint16 | | HTTP port | `8080` |
+| http.read_timeout | HTTP_READ_TIMEOUT | time.Duration | | HTTP read timeout | `"5s"` |
+| http.read_header_timeout | HTTP_READ_HEADER_TIMEOUT | time.Duration | | HTTP read header timeout | `"5s"` |
+| http.write_timeout | HTTP_WRITE_TIMEOUT | time.Duration | | HTTP write timeout | `"10s"` |
+| http.idle_timeout | HTTP_IDLE_TIMEOUT | time.Duration | | HTTP idle timeout | `"5s"` |
+| http.max_header_bytes | HTTP_MAX_HEADER_BYTES | int | | HTTP max header bytes | `1 << 20` |
 |---|---|---|---|---|---|
 | metrics.enable | METRICS_ENABLE | bool | | Whether to enable metrics router | `true` |
 | metrics.pprof | METRICS_PPROF | bool | | Whether to enable pprof router | `false` |
 | metrics.path | METRICS_PATH | string | | Metrics router path | `/metrics` |
 | metrics.addr | METRICS_ADDR | string | | Metrics address | `"0.0.0.0"` |
 | metrics.port | METRICS_PORT | uint16 | | Metrics port | `6060` |
+| metrics.read_timeout | METRICS_READ_TIMEOUT | time.Duration | | Metrics read timeout | `"5s"` |
+| metrics.read_header_timeout | METRICS_READ_HEADER_TIMEOUT | time.Duration | | Metrics read header timeout | `"5s"` |
+| metrics.write_timeout | METRICS_WRITE_TIMEOUT | time.Duration | | Metrics write timeout | `"10s"` |
+| metrics.idle_timeout | METRICS_IDLE_TIMEOUT | time.Duration | | Metrics idle timeout | `"5s"` |
+| metrics.max_header_bytes | METRICS_MAX_HEADER_BYTES | int | | Metrics max header bytes | `1 << 20` |
 |---|---|---|---|---|---|
 | secret.type | SECRET_TYPE | string | | Secret type | `"local"` |
 | secret.local_secret.private_key | SECRET_LOCAL_SECRET_PRIVATE_KEY | string | | Local secret private key | `""` |
