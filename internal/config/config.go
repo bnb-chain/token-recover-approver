@@ -182,13 +182,15 @@ func NewConfig(configPath string) (*Config, error) {
 	defaultSecretConfig(v)
 	defaultStoreConfig(v)
 
+	// note: environment variables will override config file
+	// note: environment variables should be in uppercase
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	// read config file
 	// if config file is not provided, it will use default values
 	// if config file is provided, it will override default values
-	// note: environment variables will override config file
-	// note: environment variables should be in uppercase
-	_ = v.ReadConfig(file) // no error handling because the application will panic if the config file is not provided
+	// no error handling because the application allows the config file is not provided
+	// it will use default values(override by environment variables)
+	_ = v.ReadConfig(file)
 
 	var config Config
 	if err := v.Unmarshal(&config); err != nil {
