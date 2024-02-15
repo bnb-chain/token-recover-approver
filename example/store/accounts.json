@@ -1,37 +1,15 @@
 [
 	{
-		"address": "tbnb1rhf0wkz8d6a4d3hlz9zjuzj25zmfcza9avdaju",
-		"account_number": 1
-	},
-	{
-		"address": "tbnb1wf7d5t6afrm05zmq9hw66uguae85cpsjcpddtw",
+		"address": "tbnb1kufjqrefala5ylahdgv9kjk886sf556tdcs2n5",
 		"account_number": 0,
 		"coins": [
 			{
-				"denom": "BNB",
-				"amount": 19999999000000000
-			}
-		],
-		"free_coins": [
+					"denom": "BNB",
+					"amount": 14188000000
+			},
 			{
-				"denom": "BNB",
-				"amount": 19999999000000000
-			}
-		]
-	},
-	{
-		"address": "tbnb1j725qk29cv4kwpers4addy9x93ukhw7cvulkar",
-		"account_number": 2,
-		"coins": [
-			{
-				"denom": "BNB",
-				"amount": 1000000000
-			}
-		],
-		"free_coins": [
-			{
-				"denom": "BNB",
-				"amount": 1000000000
+					"denom": "DYTT991-49A",
+					"amount": 10000000000000000
 			}
 		]
 	}
