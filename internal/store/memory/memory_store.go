@@ -62,6 +62,11 @@ func (ss *MemoryStore) GetAccountAssetProof(address types.AccAddress, symbol str
 	}, nil
 }
 
+// CountAccountAssetProofs implements store.Store.
+func (ss *MemoryStore) CountAccountAssetProofs() (count int64, err error) {
+	return int64(len(ss.proofs)), nil
+}
+
 // Close implements store.Store.
 func (ss *MemoryStore) Close() error {
 	return nil

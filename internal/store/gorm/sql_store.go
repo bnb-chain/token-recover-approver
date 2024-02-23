@@ -135,6 +135,16 @@ func (s *SQLStore) InsertAccountAssetProof(proof *store.Proof) error {
 	return nil
 }
 
+// CountAccountAssetProofs implements store.Store.
+func (s *SQLStore) CountAccountAssetProofs() (int64, error) {
+	var count int64
+	result := s.db.Model(&Proof{}).Count(&count)
+	if result.Error != nil {
+		return 0, result.Error
+	}
+	return count, nil
+}
+
 // Close implements store.Store.
 func (s *SQLStore) Close() error {
 	db, err := s.db.DB()

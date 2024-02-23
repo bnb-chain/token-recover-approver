@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/bnb-chain/node/app"
 	"github.com/bnb-chain/token-recover-approver/internal/app/tool"
 	"github.com/spf13/cobra"
 )
@@ -39,11 +40,44 @@ var migrationFromLocalToSQLCmd = &cobra.Command{
 	},
 }
 
+var verifyDataFromFullnodeCmd = &cobra.Command{
+	Use:   "verify-data-from-fullnode",
+	Short: "verify data from fullnode",
+	Long:  "verify data from fullnode database",
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(home) == 0 {
+			fmt.Println("home path is required")
+			os.Exit(1)
+		}
+
+		tool, err := tool.Initialize(cfgFile)
+		if err != nil {
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
+
+		err = tool.VerifyDataFromFullnode(nodeCtx, home, verifyMerkleRoot)
+		if err != nil {
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
+
+		fmt.Println("verify data from fullnode successfully!")
+	},
+}
+
 var (
 	migrationFromLocalToSQLConfigPath string
+
+	home             string
+	verifyMerkleRoot bool
+
+	nodeCtx = app.ServerContext
 )
 
 func init() {
 	migrationFromLocalToSQLCmd.Flags().StringVar(&migrationFromLocalToSQLConfigPath, "proof_path", "", "proof file path")
-	toolCmd.AddCommand(migrationFromLocalToSQLCmd)
+	verifyDataFromFullnodeCmd.Flags().StringVar(&home, "home", app.DefaultNodeHome, "directory for config and data")
+	verifyDataFromFullnodeCmd.Flags().BoolVar(&verifyMerkleRoot, "verify_merkle_root", false, "verify merkle root")
+	toolCmd.AddCommand(migrationFromLocalToSQLCmd, verifyDataFromFullnodeCmd)
 }
